@@ -1,4 +1,6 @@
-# BowenOS: compute + computeplusstorage (ready to install)
+# BowenOS (ready to install)
+
+BowenOS is a family of NixOS-based systems tuned for accessibility, reliability, and modern computing needs.
 
 This repo provides two flake targets (roles):
 
