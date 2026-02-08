@@ -1,6 +1,1 @@
-{ ... }:
-{
-  imports = [
-    ../../modules/server-disks.nix
-  ];
-}
+args: (import ../../modules/server-disks.nix args)
