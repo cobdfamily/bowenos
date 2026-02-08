@@ -11,6 +11,7 @@
       "/var/lib/nixos"
       "/opt/cprail"
       "/etc/ssh"
+      "/var/lib/systemd/coredump"
     ];
     files = [
       "/etc/machine-id"
