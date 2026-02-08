@@ -20,6 +20,7 @@ Usage: install.sh <command>
 
 Commands:
   show-env     Print key environment values
+  iso          Build the bootstrap ISO
   disko        Partition + create mirrored rpool (destructive)
   install      Run nixos-install for TARGET
   switch       Run nixos-rebuild switch for TARGET
@@ -45,6 +46,9 @@ case "${CMD}" in
     echo "SUDO_NEEDS_PASSWORD=${SUDO_NEEDS_PASSWORD:-}"
     echo "ALLOW_NO_SSH_KEY=${ALLOW_NO_SSH_KEY:-}"
     echo "MUTABLE_USERS=${MUTABLE_USERS:-}"
+    ;;
+  iso)
+    nix build "${ROOT}#iso"
     ;;
   disko)
     if [[ -z "${BOOTA_BYID:-}" || -z "${BOOTB_BYID:-}" ]]; then
