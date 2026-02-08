@@ -7,11 +7,14 @@
     disko.inputs.nixpkgs.follows = "nixpkgs";
     impermanence.url = "github:nix-community/impermanence";
     impermanence.inputs.nixpkgs.follows = "nixpkgs";
+    installer.url = "path:./installer";
   };
 
-  outputs = { self, nixpkgs, disko, impermanence, ... }:
+  outputs = { self, nixpkgs, disko, impermanence, installer, ... }:
     let system = "x86_64-linux";
     in {
+      packages.${system}.iso = installer.packages.${system}.iso;
+
       nixosConfigurations = {
         compute = nixpkgs.lib.nixosSystem {
           inherit system;
