@@ -24,7 +24,7 @@ in
 
   config = lib.mkIf cfg.enable {
     services.target.enable = true;
-    environment.systemPackages = [ pkgs.targetcli pkgs.jq ];
+    environment.systemPackages = [ pkgs.targetcli-fb pkgs.jq ];
     networking.firewall.allowedTCPPorts = [ 3260 ];
 
     systemd.services.iscsi-targets-apply = {
