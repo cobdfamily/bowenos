@@ -76,6 +76,7 @@ You can set them in `.env` (in repo root) or export them in your shell.
 ### Optional
 - `TARGET` — choose the flake target (`compute`, `computeplusstorage`, or `storage`); written to `/etc/target`
 - `BOOT_MODE` — `uefi` (default) or `bios` (uses GRUB when `bios`)
+- `IS_VM` — `true` to use `/dev/disk/by-path` in initrd (useful when by-id links are unreliable in VMs)
 - `BOOTB_DISK_PATH` — explicit disk path for efibootmgr (default derived from `BOOTB_BYID`)
 
 ## Install steps (from NixOS installer)

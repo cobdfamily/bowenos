@@ -19,6 +19,7 @@
 
     storage = {
       diskMode = lib.mkOption { type = lib.types.enum [ "mirror" "single" ]; default = "mirror"; };
+      isVm = lib.mkOption { type = lib.types.bool; default = false; };
     };
   };
 }

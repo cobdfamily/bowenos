@@ -13,4 +13,5 @@
 
   # Optional: override defaults
   # bowenos.storage.diskMode = "mirror";
+  # bowenos.storage.isVm = false;
 }

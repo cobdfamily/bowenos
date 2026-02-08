@@ -24,5 +24,7 @@ in
     bowenos.users.allowNoKey = lib.mkDefault (getBool "ALLOW_NO_SSH_KEY" false);
     bowenos.users.sudoNeedsPassword = lib.mkDefault (getBool "SUDO_NEEDS_PASSWORD" false);
     bowenos.users.mutableUsers = lib.mkDefault (getBool "MUTABLE_USERS" false);
+
+    bowenos.storage.isVm = lib.mkDefault (getBool "IS_VM" false);
   };
 }
