@@ -3,6 +3,7 @@
   imports = [
     ../../modules/identity.nix
     ../../modules/users-ssh.nix
+    ../../modules/networking.nix
     ../../modules/zfs.nix
     ../../modules/impermanence.nix
     ../../modules/serial-console.nix
