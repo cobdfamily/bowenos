@@ -22,5 +22,5 @@ in
   time.timeZone = config.bowenos.identity.timeZone;
   i18n.defaultLocale = config.bowenos.identity.locale;
 
-  environment.etc."target".text = config.bowenos.identity.target;
+  environment.etc."bowenos-target".text = config.bowenos.identity.target;
 }
