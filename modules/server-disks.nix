@@ -6,18 +6,22 @@ let
   bootb = get "BOOTB_BYID" "";
 
   mkPath = x: if lib.hasPrefix "/dev/" x then x else "/dev/disk/by-id/" + x;
+
+  bootaPath = mkPath boota;
+  bootbPath = mkPath bootb;
 in
 {
   assertions = [
     { assertion = boota != ""; message = "BOOTA_BYID is required (set in .env or env)."; }
     { assertion = bootb != ""; message = "BOOTB_BYID is required (set in .env or env)."; }
+    { assertion = bootaPath != bootbPath; message = "BOOTA_BYID and BOOTB_BYID must be different disks."; }
   ];
 
   disko.devices = {
     disk = {
       bootA = {
         type = "disk";
-        device = mkPath boota;
+        device = bootaPath;
         content = {
           type = "gpt";
           partitions = {
@@ -33,7 +37,7 @@ in
 
       bootB = {
         type = "disk";
-        device = mkPath bootb;
+        device = bootbPath;
         content = {
           type = "gpt";
           partitions = {

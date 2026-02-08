@@ -16,6 +16,7 @@ let
   allowNoKey = (get "ALLOW_NO_SSH_KEY" "false") == "true";
 
   sudoNeedsPassword = (get "SUDO_NEEDS_PASSWORD" "false") == "true";
+  mutableUsers = (get "MUTABLE_USERS" "false") == "true";
 in
 {
   services.openssh.enable = true;
@@ -28,8 +29,8 @@ in
     AllowTcpForwarding = "no";
   };
 
-  # Keep it predictable: NixOS manages users; you can later set hashedPassword manually if you want.
-  users.mutableUsers = true;
+  # Default to immutable users for reproducibility; set MUTABLE_USERS=true to opt in.
+  users.mutableUsers = mutableUsers;
 
   users.users.${adminUser} = {
     isNormalUser = true;

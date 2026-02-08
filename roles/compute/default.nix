@@ -5,6 +5,7 @@
     ../../modules/users-ssh.nix
     ../../modules/zfs.nix
     ../../modules/impermanence.nix
+    ../../modules/boot-efi.nix
     ../../modules/efi-mirror.nix
     ../../modules/lan-bridge.nix
     ../../modules/incus-preseed.nix

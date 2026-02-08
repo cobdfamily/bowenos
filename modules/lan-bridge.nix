@@ -4,6 +4,7 @@ in {
   options.bowenos.lanBridge = {
     enable = lib.mkEnableOption "Create a LAN bridge for Incus instances";
     bridgeName = lib.mkOption { type = lib.types.str; default = "br0"; };
+    uplinkMatch = lib.mkOption { type = lib.types.str; default = "en*"; };
   };
 
   config = lib.mkIf cfg.enable {
@@ -14,8 +15,8 @@ in {
       netdevConfig = { Name = cfg.bridgeName; Kind = "bridge"; };
     };
 
-    systemd.network.networks."10-uplink-en" = {
-      matchConfig.Name = "en*";
+    systemd.network.networks."10-uplink" = {
+      matchConfig.Name = cfg.uplinkMatch;
       networkConfig = { Bridge = cfg.bridgeName; DHCP = "no"; };
     };
 

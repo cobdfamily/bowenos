@@ -62,6 +62,7 @@ or pass them inline to `just`.
 ### Safeguards / policy
 - `SUDO_NEEDS_PASSWORD` — `true` or `false`
 - `ALLOW_NO_SSH_KEY` — `true` to allow console-only bootstrap without a key
+- `MUTABLE_USERS` — `true` to allow manual user/group changes outside Nix; default is immutable users for reproducibility
 
 ### Optional
 - `ROLE` — informational string written to `/etc/role`
