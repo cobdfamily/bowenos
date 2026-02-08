@@ -13,6 +13,9 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
+    # Incus requires nftables on NixOS.
+    networking.nftables.enable = true;
+
     virtualisation.incus.enable = true;
     environment.systemPackages = [ pkgs.incus pkgs.jq pkgs.zfs ];
     networking.firewall.allowedTCPPorts = [ 8443 ];
