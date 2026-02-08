@@ -1,22 +1,8 @@
-{ lib, pkgs, ... }:
+{ lib, pkgs, config, ... }:
 let
-  get = name: def: let v = builtins.getEnv name; in if v == "" then def else v;
-
-  adminUser = get "ADMIN_USER" "admin";
-
-  keyFromVar = builtins.getEnv "SSH_PUBKEY";
-  keyFile = builtins.getEnv "SSH_PUBKEY_FILE";
-  keyFromFile = if keyFile == "" then "" else builtins.readFile keyFile;
-
-  sshKeyRaw = if keyFromVar != "" then keyFromVar else keyFromFile;
-  # Avoid lib.strings.trimString (not available on some pins); strip trailing newlines.
-  sshKey = lib.strings.removeSuffix "\r" (lib.strings.removeSuffix "\n" sshKeyRaw);
-
+  cfg = config.bowenos.users;
+  sshKey = lib.strings.removeSuffix "\r" (lib.strings.removeSuffix "\n" cfg.sshPubKey);
   haveKey = sshKey != "";
-  allowNoKey = (get "ALLOW_NO_SSH_KEY" "false") == "true";
-
-  sudoNeedsPassword = (get "SUDO_NEEDS_PASSWORD" "false") == "true";
-  mutableUsers = (get "MUTABLE_USERS" "false") == "true";
 in
 {
   services.openssh.enable = true;
@@ -30,9 +16,9 @@ in
   };
 
   # Default to immutable users for reproducibility; set MUTABLE_USERS=true to opt in.
-  users.mutableUsers = mutableUsers;
+  users.mutableUsers = cfg.mutableUsers;
 
-  users.users.${adminUser} = {
+  users.users.${cfg.adminUser} = {
     isNormalUser = true;
     shell = pkgs.bashInteractive;
     extraGroups = [
@@ -43,11 +29,11 @@ in
     openssh.authorizedKeys.keys = lib.optionals haveKey [ sshKey ];
   };
 
-  security.sudo.wheelNeedsPassword = sudoNeedsPassword;
+  security.sudo.wheelNeedsPassword = cfg.sudoNeedsPassword;
 
   assertions = [
     {
-      assertion = haveKey || allowNoKey;
+      assertion = haveKey || cfg.allowNoKey;
       message = "No SSH key provided. Set SSH_PUBKEY or SSH_PUBKEY_FILE (or set ALLOW_NO_SSH_KEY=true for console-only bootstrap).";
     }
   ];

@@ -2,52 +2,60 @@
 
 BowenOS is a family of NixOS-based systems tuned for accessibility, reliability, and modern computing needs.
 
-This repo provides two flake targets (roles):
+This repo provides three flake targets:
 
 - `compute`: Incus host (ZFS-backed) + LAN bridge profile
 - `computeplusstorage`: everything in `compute` **plus** NFS server enabled + iSCSI targets from per-target files
+- `storage`: NFS + iSCSI server without Incus
 
 ## What you get
-Both roles include:
+All targets include:
 - ZFS mirrored boot pool via **disko**
 - Ephemeral root via **impermanence**
-  - persists: `/var/log`, `/var/lib/incus`, `/opt/cprail`
+  - persists: `/var/log`, `/var/lib/incus`, `/var/lib/nixos`, `/etc/ssh`, `/var/lib/systemd/coredump`, `/opt/cprail`
 - SSH locked down to **keys only**, **root login disabled**
 - Admin user created at build time from env vars
+- EFI mirror sync from `/boot` to `/boot-mirror` and a best-effort EFI boot entry creation
+
+`compute`/`computeplusstorage` additionally include:
 - Incus init + ZFS-backed Incus storage pool
 - Default NAT network (`incusbr0`) and a `bridge-to-lan` profile bridged to host `br0`
 - Host bridge `br0` that enslaves `en*` NICs and uses DHCP on `br0`
-- EFI mirror sync from `/boot` to `/boot-mirror` and a best-effort EFI boot entry creation
 
-`computeplusstorage` additionally includes:
+`computeplusstorage`/`storage` additionally include:
 - NFS server enabled (you set `sharenfs` manually on ZFS datasets)
-- iSCSI target application from `modules/iscsi/targets/*.nix` (you create zvols manually)
+- iSCSI target application from `modules/services/iscsi/targets/*.nix` (you create zvols manually)
 
-## Choosing a role (compute vs computeplusstorage)
+## Choosing a target
 
 ### Install compute
 ```bash
-TARGET=compute just disko
-TARGET=compute just install
+TARGET=compute ./install/install.sh disko
+TARGET=compute ./install/install.sh install
 ```
 
 ### Install computeplusstorage (default)
 ```bash
-just disko
-just install
+./install/install.sh disko
+./install/install.sh install
 ```
 
-You can also set `TARGET=compute` or `TARGET=computeplusstorage` in `.env`.
+### Install storage
+```bash
+TARGET=storage ./install/install.sh disko
+TARGET=storage ./install/install.sh install
+```
+
+You can also set `TARGET=compute`, `TARGET=computeplusstorage`, or `TARGET=storage` in `.env`.
 
 ## Environment variables (implemented)
 
-These are read during Nix evaluation using `builtins.getEnv`, so commands run with `--impure`
-(the `just` recipes do this automatically). You can set them in `.env`, export them in your shell,
-or pass them inline to `just`.
+These are read during Nix evaluation using `builtins.getEnv`, so commands run with `--impure`.
+You can set them in `.env` (in repo root) or export them in your shell.
 
 ### Required
 - `BOOTA_BYID` — boot disk A (by-id basename like `nvme-...` or full `/dev/...` path)
-- `BOOTB_BYID` — boot disk B (by-id basename or full path)
+- `BOOTB_BYID` — boot disk B (by-id basename or full path). Required when `DISK_MODE=mirror`.
 - `HOSTID` — 8 hex characters (required by ZFS; example `deadbeef`)
 
 ### Strongly recommended
@@ -66,12 +74,14 @@ or pass them inline to `just`.
 
 ### Optional
 - `ROLE` — informational string written to `/etc/role`
-- `TARGET` — choose the flake target role for `just` (`compute` or `computeplusstorage`)
+- `TARGET` — choose the flake target (`compute`, `computeplusstorage`, or `storage`)
+- `DISK_MODE` — `mirror` (default) or `single`
+- `BOOT_MODE` — `uefi` (default) or `bios` (uses GRUB when `bios`)
 - `BOOTB_DISK_PATH` — explicit disk path for efibootmgr (default derived from `BOOTB_BYID`)
 
 ## Install steps (from NixOS installer)
 
-1) Clone the repo somewhere safe (not under `/mnt`, because `just disko` will wipe `/mnt`):
+1) Clone the repo somewhere safe (not under `/mnt`, because `disko` will wipe `/mnt`):
 ```bash
 git clone https://github.com/cobdfamily/bowenos /root/bowenos
 cd /root/bowenos
@@ -79,10 +89,10 @@ cd /root/bowenos
 
 2) Partition + create mirrored rpool (WIPES boot disks):
 ```bash
-just disko
+./install/install.sh disko
 ```
 
-It will prompt `y/N` before wiping. Use `FORCE=1 just disko` to skip prompting.
+It will prompt `y/N` before wiping. Use `FORCE=1 ./install/install.sh disko` to skip prompting.
 
 3) Clone the repo into `/mnt/etc/nixos`:
 ```bash
@@ -99,32 +109,32 @@ nano .env
 
 5) Install:
 ```bash
-just install
+./install/install.sh install
 reboot
 ```
 
 ## After boot
 ```bash
 cd /etc/nixos
-just switch
+./install/install.sh switch
 ```
 
-## NFS (computeplusstorage only)
+## NFS (computeplusstorage/storage only)
 NFS service is enabled. You set per-dataset exports manually, e.g.:
 ```bash
 zfs set sharenfs="rw=@192.168.1.0/24,no_subtree_check,async" tank/nfs
 ```
 
-## iSCSI (computeplusstorage only)
-Targets live in `modules/iscsi/targets/*.nix`.
+## iSCSI (computeplusstorage/storage only)
+Targets live in `modules/services/iscsi/targets/*.nix`.
 You create zvols manually (e.g. `tank/vmstore`) and reference them as `/dev/zvol/...`.
 
 Check backing devices exist:
 ```bash
-just iscsi-check
+./install/install.sh iscsi-check
 ```
 
 Apply changes:
 ```bash
-just switch
+./install/install.sh switch
 ```

@@ -1,16 +1,18 @@
 { ... }:
 {
   imports = [
-    ../../modules/identity.nix
+    ../../modules/base.nix
     ../../modules/users-ssh.nix
     ../../modules/networking.nix
-    ../../modules/zfs.nix
-    ../../modules/impermanence.nix
-    ../../modules/serial-console.nix
-    ../../modules/boot-efi.nix
+    ../../modules/storage-zfs.nix
+    ../../modules/persistence.nix
+    ../../hardware/server.nix
+    ../../modules/boot.nix
     ../../modules/efi-mirror.nix
     ../../modules/lan-bridge.nix
-    ../../modules/incus-preseed.nix
+    ../../modules/services/incus.nix
+    ../../modules/services/nfs.nix
+    ../../modules/services/iscsi.nix
   ];
 
   bowenos.incusPreseed = {
@@ -28,13 +30,13 @@
     bridgeName = "br0";
   };
 
-  # EFI mirror uses BOOTB_BYID by default; override if needed:
-  # BOOTB_DISK_PATH=/dev/disk/by-id/<BOOTB_BYID>
   bowenos.efiMirror = {
     enable = true;
     mirrorMount = "/boot-mirror";
     bootLabel = "NixOS (mirror)";
   };
+
+  bowenos.iscsi.enable = true;
 
   system.stateVersion = "25.11";
 }

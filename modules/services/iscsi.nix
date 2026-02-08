@@ -1,7 +1,7 @@
 { lib, pkgs, config, ... }:
 let
   cfg = config.bowenos.iscsi;
-  targetsDir = ./targets;
+  targetsDir = ./iscsi/targets;
 
   targetFiles = lib.filterAttrs (n: v: v == "regular" && lib.hasSuffix ".nix" n) (builtins.readDir targetsDir);
   targets = map (name: import (targetsDir + "/${name}")) (builtins.attrNames targetFiles);
@@ -28,7 +28,7 @@ in
     networking.firewall.allowedTCPPorts = [ 3260 ];
 
     systemd.services.iscsi-targets-apply = {
-      description = "Apply iSCSI targets from modules/iscsi/targets/*.nix";
+      description = "Apply iSCSI targets from modules/services/iscsi/targets/*.nix";
       after = [ "network-online.target" "local-fs.target" ];
       wants = [ "network-online.target" ];
       wantedBy = [ "multi-user.target" ];

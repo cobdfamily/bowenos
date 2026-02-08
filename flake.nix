@@ -18,8 +18,8 @@
           modules = [
             disko.nixosModules.disko
             impermanence.nixosModules.impermanence
-            ./roles/compute/disks.nix
-            ./roles/compute/default.nix
+            ./targets/compute/disks.nix
+            ./targets/compute/default.nix
           ];
         };
 
@@ -28,8 +28,18 @@
           modules = [
             disko.nixosModules.disko
             impermanence.nixosModules.impermanence
-            ./roles/computeplusstorage/disks.nix
-            ./roles/computeplusstorage/default.nix
+            ./targets/computeplusstorage/disks.nix
+            ./targets/computeplusstorage/default.nix
+          ];
+        };
+
+        storage = nixpkgs.lib.nixosSystem {
+          inherit system;
+          modules = [
+            disko.nixosModules.disko
+            impermanence.nixosModules.impermanence
+            ./targets/storage/disks.nix
+            ./targets/storage/default.nix
           ];
         };
       };

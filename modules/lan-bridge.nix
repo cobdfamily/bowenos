@@ -8,9 +8,6 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    networking.useNetworkd = true;
-    systemd.network.enable = true;
-
     systemd.network.netdevs."10-${cfg.bridgeName}" = {
       netdevConfig = { Name = cfg.bridgeName; Kind = "bridge"; };
     };
