@@ -89,10 +89,12 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
+        "narHash": "sha256-9B6mK5802wfkZR5n8xrOKS/8/VjgH4jly0E+FuqfCU8=",
         "path": "./installer",
         "type": "path"
       },
       "original": {
+        "narHash": "sha256-9B6mK5802wfkZR5n8xrOKS/8/VjgH4jly0E+FuqfCU8=",
         "path": "./installer",
         "type": "path"
       },
