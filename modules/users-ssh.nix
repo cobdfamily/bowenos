@@ -9,7 +9,8 @@ let
   keyFromFile = if keyFile == "" then "" else builtins.readFile keyFile;
 
   sshKeyRaw = if keyFromVar != "" then keyFromVar else keyFromFile;
-  sshKey = lib.strings.trimString sshKeyRaw;
+  # Avoid lib.strings.trimString (not available on some pins); strip trailing newlines.
+  sshKey = lib.strings.removeSuffix "\r" (lib.strings.removeSuffix "\n" sshKeyRaw);
 
   haveKey = sshKey != "";
   allowNoKey = (get "ALLOW_NO_SSH_KEY" "false") == "true";

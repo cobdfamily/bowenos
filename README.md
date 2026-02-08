@@ -70,27 +70,33 @@ or pass them inline to `just`.
 
 ## Install steps (from NixOS installer)
 
-1) Clone the repo into `/mnt/etc/nixos`:
+1) Clone the repo somewhere safe (not under `/mnt`, because `just disko` will wipe `/mnt`):
 ```bash
-mkdir -p /mnt/etc
-git clone https://github.com/cobdfamily/bowenos /mnt/etc/nixos
-cd /mnt/etc/nixos/nixos
+git clone https://github.com/cobdfamily/bowenos /root/bowenos
+cd /root/bowenos
 ```
 
-2) Create `.env`:
-```bash
-cp .env.example .env
-nano .env
-```
-
-3) Partition + create mirrored rpool (WIPES boot disks):
+2) Partition + create mirrored rpool (WIPES boot disks):
 ```bash
 just disko
 ```
 
 It will prompt `y/N` before wiping. Use `FORCE=1 just disko` to skip prompting.
 
-4) Install:
+3) Clone the repo into `/mnt/etc/nixos`:
+```bash
+mkdir -p /mnt/etc
+git clone https://github.com/cobdfamily/bowenos /mnt/etc/nixos
+cd /mnt/etc/nixos
+```
+
+4) Create `.env`:
+```bash
+cp .env.example .env
+nano .env
+```
+
+5) Install:
 ```bash
 just install
 reboot
@@ -98,7 +104,7 @@ reboot
 
 ## After boot
 ```bash
-cd /etc/nixos/nixos
+cd /etc/nixos
 just switch
 ```
 
