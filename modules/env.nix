@@ -17,7 +17,7 @@ in
     bowenos.identity.hostId = lib.mkDefault (get "HOSTID" "");
     bowenos.identity.timeZone = lib.mkDefault (get "TIMEZONE" "America/Vancouver");
     bowenos.identity.locale = lib.mkDefault (get "LOCALE" "en_CA.UTF-8");
-    bowenos.identity.role = lib.mkDefault (get "ROLE" "unknown");
+    bowenos.identity.target = lib.mkDefault (get "TARGET" "unknown");
 
     bowenos.users.adminUser = lib.mkDefault adminUser;
     bowenos.users.sshPubKey = lib.mkDefault sshKey;

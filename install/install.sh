@@ -31,7 +31,7 @@ USAGE
 case "${CMD}" in
   show-env)
     echo "TARGET=${TARGET}"
-    echo "ROLE=${ROLE:-}"
+    echo "TARGET(from env)=${TARGET}"
     echo "HOSTNAME=${HOSTNAME:-}"
     echo "HOSTID=${HOSTID:-}"
     echo "TIMEZONE=${TIMEZONE:-}"

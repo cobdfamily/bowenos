@@ -6,7 +6,7 @@
       hostId = lib.mkOption { type = lib.types.str; default = ""; };
       timeZone = lib.mkOption { type = lib.types.str; default = "America/Vancouver"; };
       locale = lib.mkOption { type = lib.types.str; default = "en_CA.UTF-8"; };
-      role = lib.mkOption { type = lib.types.str; default = "unknown"; };
+      target = lib.mkOption { type = lib.types.str; default = "unknown"; };
     };
 
     users = {

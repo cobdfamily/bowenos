@@ -4,10 +4,12 @@ let
   hostIdValid = builtins.match "^[0-9a-fA-F]{8}$" hostId != null;
 in
 {
-  imports = [
-    ./options.nix
-    ./env.nix
-  ];
+  imports =
+    [
+      ./options.nix
+      ./env.nix
+    ]
+    ++ (lib.optional (builtins.pathExists ../local.nix) ../local.nix);
 
   assertions = [
     { assertion = hostId != ""; message = "HOSTID is required (8 hex chars)."; }
@@ -20,5 +22,5 @@ in
   time.timeZone = config.bowenos.identity.timeZone;
   i18n.defaultLocale = config.bowenos.identity.locale;
 
-  environment.etc."role".text = config.bowenos.identity.role;
+  environment.etc."target".text = config.bowenos.identity.target;
 }

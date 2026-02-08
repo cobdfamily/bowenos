@@ -74,8 +74,7 @@ You can set them in `.env` (in repo root) or export them in your shell.
 - `MUTABLE_USERS` — `true` to allow manual user/group changes outside Nix; default is immutable users for reproducibility
 
 ### Optional
-- `ROLE` — informational string written to `/etc/role`
-- `TARGET` — choose the flake target (`compute`, `computeplusstorage`, or `storage`)
+- `TARGET` — choose the flake target (`compute`, `computeplusstorage`, or `storage`); written to `/etc/target`
 - `BOOT_MODE` — `uefi` (default) or `bios` (uses GRUB when `bios`)
 - `BOOTB_DISK_PATH` — explicit disk path for efibootmgr (default derived from `BOOTB_BYID`)
 
