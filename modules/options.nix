@@ -16,5 +16,9 @@
       sudoNeedsPassword = lib.mkOption { type = lib.types.bool; default = false; };
       mutableUsers = lib.mkOption { type = lib.types.bool; default = false; };
     };
+
+    storage = {
+      diskMode = lib.mkOption { type = lib.types.enum [ "mirror" "single" ]; default = "mirror"; };
+    };
   };
 }

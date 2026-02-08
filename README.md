@@ -12,7 +12,7 @@ This repo provides three flake targets:
 All targets include:
 - ZFS mirrored boot pool via **disko**
 - Ephemeral root via **impermanence**
-  - persists: `/var/log`, `/var/lib/incus`, `/var/lib/nixos`, `/etc/ssh`, `/var/lib/systemd/coredump`, `/opt/cprail`
+  - persists: `/etc/ssh`, `/opt/cprail`, `/var/lib/incus`, `/var/lib/nixos`, `/var/lib/systemd/coredump`, `/var/log`
 - SSH locked down to **keys only**, **root login disabled**
 - Admin user created at build time from env vars
 - EFI mirror sync from `/boot` to `/boot-mirror` and a best-effort EFI boot entry creation
@@ -75,7 +75,6 @@ You can set them in `.env` (in repo root) or export them in your shell.
 ### Optional
 - `ROLE` — informational string written to `/etc/role`
 - `TARGET` — choose the flake target (`compute`, `computeplusstorage`, or `storage`)
-- `DISK_MODE` — `mirror` (default) or `single`
 - `BOOT_MODE` — `uefi` (default) or `bios` (uses GRUB when `bios`)
 - `BOOTB_DISK_PATH` — explicit disk path for efibootmgr (default derived from `BOOTB_BYID`)
 

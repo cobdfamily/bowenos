@@ -37,7 +37,6 @@ case "${CMD}" in
     echo "LOCALE=${LOCALE:-}"
     echo "BOOTA_BYID=${BOOTA_BYID:-}"
     echo "BOOTB_BYID=${BOOTB_BYID:-}"
-    echo "DISK_MODE=${DISK_MODE:-}"
     echo "BOOT_MODE=${BOOT_MODE:-}"
     echo "BOOTB_DISK_PATH=${BOOTB_DISK_PATH:-}"
     echo "ADMIN_USER=${ADMIN_USER:-}"

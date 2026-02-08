@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, config, ... }:
 let
   get = name: def: let v = builtins.getEnv name; in if v == "" then def else v;
 
@@ -10,8 +10,8 @@ let
   bootaPath = mkPath boota;
   bootbPath = mkPath bootb;
 
-  # Disk mode: mirror (default) or single
-  diskMode = get "DISK_MODE" "mirror";
+  # Disk mode: mirror (default) or single (set by hardware profile)
+  diskMode = config.bowenos.storage.diskMode;
   useMirror = diskMode == "mirror";
 
   # Boot mode: uefi (default) or bios
