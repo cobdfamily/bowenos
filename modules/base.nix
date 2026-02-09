@@ -7,7 +7,6 @@ in
   imports =
     [
       ./options.nix
-      ./env.nix
     ]
     ++ (lib.optional (builtins.pathExists ../local.nix) ../local.nix);
 
