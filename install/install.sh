@@ -108,10 +108,9 @@ case "${CMD}" in
     fi
     ;;
   switch)
+    validate_hardware
+    export BOWENOS_HARDWARE_CONFIG="${HARDWARE_FILE}"
     sudo nixos-rebuild switch --impure --flake "${ROOT}#${TARGET}"
-    ;;
-  rebuild)
-    nixos-rebuild switch --impure --flake "${ROOT}#${TARGET}"
     ;;
   iscsi-check)
     fail=0
