@@ -1,3 +1,1 @@
-args: (import ../../modules/disko-zfs.nix (args // {
-  config = { bowenos.storage.diskMode = "mirror"; };
-}))
+args: (import ../../modules/disko-zfs.nix args)
