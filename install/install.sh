@@ -102,6 +102,42 @@ select_disk_by_id() {
   done
 }
 
+select_host_if_needed() {
+  if [[ -n "${HOST}" ]]; then
+    return 0
+  fi
+
+  if [[ ! -d /tmp/bowenos/hosts ]]; then
+    echo "HOST is not set and /tmp/bowenos/hosts does not exist." >&2
+    exit 2
+  fi
+
+  mapfile -t _hosts < <(find /tmp/bowenos/hosts -mindepth 1 -maxdepth 1 -type d -printf "%f\n" | sort)
+  if [[ ${#_hosts[@]} -eq 0 ]]; then
+    echo "No hosts found under /tmp/bowenos/hosts." >&2
+    exit 2
+  fi
+
+  if [[ ${#_hosts[@]} -eq 1 ]]; then
+    HOST="${_hosts[0]}"
+    return 0
+  fi
+
+  echo "HOST is not set. Select a host:"
+  local i=1
+  for h in "${_hosts[@]}"; do
+    echo "  ${i}) ${h}"
+    i=$((i + 1))
+  done
+  read -r -p "Select host number: " idx
+  if [[ "${idx}" =~ ^[0-9]+$ ]] && (( idx >= 1 && idx <= ${#_hosts[@]} )); then
+    HOST="${_hosts[$((idx-1))]}"
+  else
+    echo "Invalid selection." >&2
+    exit 2
+  fi
+}
+
 case "${CMD}" in
   iso)
     nix build "${ROOT}#iso"
@@ -204,6 +240,7 @@ case "${CMD}" in
     if [[ -d /tmp/bowenos ]]; then
       INVENTORY_ROOT="/tmp/bowenos"
     fi
+    select_host_if_needed
     if [[ -n "${HOST}" ]]; then
       TARGET="$(nix eval --raw "${INVENTORY_ROOT}#hostInfo.${HOST}.target")"
       BOOTA_BYID="$(nix eval --raw "${INVENTORY_ROOT}#hosts.${HOST}.bootaById")"
@@ -239,31 +276,7 @@ case "${CMD}" in
     ;;
   install)
     if [[ -f /tmp/bowenos/flake.nix ]]; then
-      if [[ -z "${HOST}" ]]; then
-        if [[ -d /tmp/bowenos/hosts ]]; then
-          mapfile -t _hosts < <(find /tmp/bowenos/hosts -mindepth 1 -maxdepth 1 -type d -printf "%f\n" | sort)
-          if [[ ${#_hosts[@]} -eq 1 ]]; then
-            HOST="${_hosts[0]}"
-          else
-            echo "HOST is not set. Select a host:"
-            local i=1
-            for h in "${_hosts[@]}"; do
-              echo "  ${i}) ${h}"
-              i=$((i + 1))
-            done
-            read -r -p "Select host number: " idx
-            if [[ "${idx}" =~ ^[0-9]+$ ]] && (( idx >= 1 && idx <= ${#_hosts[@]} )); then
-              HOST="${_hosts[$((idx-1))]}"
-            else
-              echo "Invalid selection." >&2
-              exit 2
-            fi
-          fi
-        else
-          echo "HOST is not set and /tmp/bowenos/hosts does not exist." >&2
-          exit 2
-        fi
-      fi
+      select_host_if_needed
       nixos-install --impure --flake "path:/tmp/bowenos#${HOST}"
     else
       echo "Missing /tmp/bowenos/flake.nix. Run ./install/install.sh setup first." >&2
@@ -275,8 +288,9 @@ case "${CMD}" in
     fi
     ;;
   switch)
-    if [[ -n "${HOST}" ]]; then
-      sudo nixos-rebuild switch --impure --flake "${INVENTORY_ROOT}#${HOST}"
+    if [[ -f /tmp/bowenos/flake.nix ]]; then
+      select_host_if_needed
+      sudo nixos-rebuild switch --impure --flake "path:/tmp/bowenos#${HOST}"
     else
       sudo nixos-rebuild switch --impure --flake "${ROOT}#${TARGET}"
     fi
