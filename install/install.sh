@@ -98,6 +98,7 @@ case "${CMD}" in
     ;;
   install)
     validate_hardware
+    export BOWENOS_HARDWARE_CONFIG="${HARDWARE_FILE}"
     nixos-install --impure --flake "${ROOT}#${TARGET}"
     if command -v zpool >/dev/null 2>&1; then
       echo "Exporting rpool before reboot..."
