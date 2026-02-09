@@ -25,6 +25,7 @@ Commands:
   install      Run nixos-install for TARGET
   switch       Run nixos-rebuild switch for TARGET
   iscsi-check  Validate iSCSI backing devices exist
+  hardware-scan  Generate hardware-configuration.nix into repo
 USAGE
 }
 
@@ -108,6 +109,13 @@ case "${CMD}" in
       done
     done
     exit ${fail}
+    ;;
+  hardware-scan)
+    rm -rf /tmp/hardware
+    mkdir -p /tmp/hardware
+    nixos-generate-config --root /tmp/hardware
+    cp /tmp/hardware/etc/nixos/hardware-configuration.nix "${ROOT}/hardware-configuration.nix"
+    echo "Wrote ${ROOT}/hardware-configuration.nix"
     ;;
   *)
     usage
