@@ -41,7 +41,24 @@
           host = import localFile;
           system = host.system or defaultSystem;
           target = host.target;
-          hostModule = host.module or (throw "hosts/${name}/local.nix must export { target, module }");
+          hostModule = host.module or (_: { });
+          shortModule = { lib, ... }: {
+            bowenos.identity.hostId = lib.mkDefault (host.hostId or "");
+            bowenos.identity.hostName = lib.mkDefault (host.hostName or name);
+            bowenos.identity.timeZone = lib.mkDefault (host.timeZone or "America/Vancouver");
+            bowenos.identity.locale = lib.mkDefault (host.locale or "en_CA.UTF-8");
+            bowenos.identity.target = lib.mkDefault (target);
+
+            bowenos.users.adminUser = lib.mkDefault (host.adminUser or "admin");
+            bowenos.users.sshPubKey = lib.mkDefault (host.sshPubKey or "");
+            bowenos.users.allowNoKey = lib.mkDefault (host.allowNoKey or false);
+            bowenos.users.sudoNeedsPassword = lib.mkDefault (host.sudoNeedsPassword or false);
+            bowenos.users.mutableUsers = lib.mkDefault (host.mutableUsers or false);
+            bowenos.users.consolePassword = lib.mkDefault (host.consolePassword or "");
+
+            bowenos.storage.isVm = lib.mkDefault (host.isVm or false);
+            bowenos.storage.diskMode = lib.mkDefault (host.diskMode or "mirror");
+          };
           hw = hostPath + "/hardware-configuration.nix";
           local = hostPath + "/local.nix";
           identityDefaults = { ... }: {
@@ -57,6 +74,7 @@
             bowenos.outPath + "/targets/${target}/disks.nix"
             bowenos.outPath + "/targets/${target}/default.nix"
             identityDefaults
+            shortModule
             hostModule
           ]
           ++ (if builtins.pathExists hw then [ hw ] else [ ])
