@@ -2,6 +2,7 @@
 {
   imports = [
     ../../modules/base.nix
+    ../../modules/base-packages.nix
     ../../modules/users-ssh.nix
     ../../modules/networking.nix
     ../../modules/storage-zfs.nix
