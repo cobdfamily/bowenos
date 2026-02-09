@@ -10,6 +10,7 @@
   bowenos.users.allowNoKey = false;
   bowenos.users.sudoNeedsPassword = false;
   bowenos.users.mutableUsers = false;
+  bowenos.users.consolePassword = "";
 
   # Optional: override defaults
   # bowenos.storage.diskMode = "mirror";

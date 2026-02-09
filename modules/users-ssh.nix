@@ -27,6 +27,7 @@ in
       "incus-admin"
       "systemd-journal"
     ];
+    initialPassword = lib.mkIf (cfg.consolePassword != "") cfg.consolePassword;
     openssh.authorizedKeys.keys = lib.optionals haveKey [ sshKey ];
   };
 

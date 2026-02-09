@@ -15,6 +15,7 @@
       allowNoKey = lib.mkOption { type = lib.types.bool; default = false; };
       sudoNeedsPassword = lib.mkOption { type = lib.types.bool; default = false; };
       mutableUsers = lib.mkOption { type = lib.types.bool; default = false; };
+      consolePassword = lib.mkOption { type = lib.types.str; default = ""; };
     };
 
     storage = {
