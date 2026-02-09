@@ -4,6 +4,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENV_FILE="${ROOT}/.env"
 HOST="${HOST:-}"
+INVENTORY_ROOT="${ROOT}/installer/templates/flakes/inventory"
 HARDWARE_FILE="${ROOT}/hardware-configuration.nix"
 
 if [[ -f "${ENV_FILE}" ]]; then
@@ -76,8 +77,8 @@ case "${CMD}" in
       exit 2
     fi
     if [[ -n "${HOST}" ]]; then
-      TARGET="$(nix eval --raw "${ROOT}#hostInfo.${HOST}.target")"
-      HARDWARE_FILE="${ROOT}/hosts/${HOST}/hardware-configuration.nix"
+      TARGET="$(nix eval --raw "${INVENTORY_ROOT}#hostInfo.${HOST}.target")"
+      HARDWARE_FILE="${INVENTORY_ROOT}/hosts/${HOST}/hardware-configuration.nix"
     fi
     if [[ "${FORCE:-0}" != "1" ]]; then
       echo "⚠️  About to WIPE and repartition:"
@@ -105,12 +106,12 @@ case "${CMD}" in
     ;;
   install)
     if [[ -n "${HOST}" ]]; then
-      HARDWARE_FILE="${ROOT}/hosts/${HOST}/hardware-configuration.nix"
+      HARDWARE_FILE="${INVENTORY_ROOT}/hosts/${HOST}/hardware-configuration.nix"
     fi
     validate_hardware
     export BOWENOS_HARDWARE_CONFIG="${HARDWARE_FILE}"
     if [[ -n "${HOST}" ]]; then
-      nixos-install --impure --flake "${ROOT}#${HOST}"
+      nixos-install --impure --flake "${INVENTORY_ROOT}#${HOST}"
     else
       nixos-install --impure --flake "${ROOT}#${TARGET}"
     fi
@@ -121,7 +122,7 @@ case "${CMD}" in
     ;;
   switch)
     if [[ -n "${HOST}" ]]; then
-      HARDWARE_FILE="${ROOT}/hosts/${HOST}/hardware-configuration.nix"
+      HARDWARE_FILE="${INVENTORY_ROOT}/hosts/${HOST}/hardware-configuration.nix"
     fi
     validate_hardware
     export BOWENOS_HARDWARE_CONFIG="${HARDWARE_FILE}"
@@ -130,7 +131,7 @@ case "${CMD}" in
     fi
     if [[ -n "${HOST}" ]]; then
       sudo env BOWENOS_HARDWARE_CONFIG="${BOWENOS_HARDWARE_CONFIG}" \
-        nixos-rebuild switch --impure --flake "${ROOT}#${HOST}"
+        nixos-rebuild switch --impure --flake "${INVENTORY_ROOT}#${HOST}"
     else
       sudo env BOWENOS_HARDWARE_CONFIG="${BOWENOS_HARDWARE_CONFIG}" \
         nixos-rebuild switch --impure --flake "${ROOT}#${TARGET}"
@@ -162,9 +163,9 @@ case "${CMD}" in
     mkdir -p /tmp/hardware
     nixos-generate-config --root /tmp/hardware
     if [[ -n "${HOST}" ]]; then
-      mkdir -p "${ROOT}/hosts/${HOST}"
-      cp /tmp/hardware/etc/nixos/hardware-configuration.nix "${ROOT}/hosts/${HOST}/hardware-configuration.nix"
-      HARDWARE_FILE="${ROOT}/hosts/${HOST}/hardware-configuration.nix"
+      mkdir -p "${INVENTORY_ROOT}/hosts/${HOST}"
+      cp /tmp/hardware/etc/nixos/hardware-configuration.nix "${INVENTORY_ROOT}/hosts/${HOST}/hardware-configuration.nix"
+      HARDWARE_FILE="${INVENTORY_ROOT}/hosts/${HOST}/hardware-configuration.nix"
     else
       cp /tmp/hardware/etc/nixos/hardware-configuration.nix "${ROOT}/hardware-configuration.nix"
       HARDWARE_FILE="${ROOT}/hardware-configuration.nix"
