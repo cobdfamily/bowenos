@@ -119,6 +119,11 @@ cd /etc/nixos
 ./install/install.sh switch
 ```
 
+## EFI mirror specialisation
+If the primary EFI partition is unavailable, you can boot the specialisation that
+uses the mirror mount point. In the systemd-boot menu, choose the entry labeled
+`NixOS - efi-mirror`.
+
 ## NFS (computeplusstorage/storage only)
 NFS service is enabled. You set per-dataset exports manually, e.g.:
 ```bash
