@@ -241,6 +241,10 @@ case "${CMD}" in
       INVENTORY_ROOT="/tmp/bowenos"
     fi
     select_host_if_needed
+    if [[ -z "${HOST}" ]]; then
+      echo "HOST could not be determined for disko." >&2
+      exit 2
+    fi
     if [[ -n "${HOST}" ]]; then
       TARGET="$(nix eval --raw "path:${INVENTORY_ROOT}#hostInfo.${HOST}.target")"
       BOOTA_BYID="$(nix eval --raw "path:${INVENTORY_ROOT}#hosts.${HOST}.bootaById")"
