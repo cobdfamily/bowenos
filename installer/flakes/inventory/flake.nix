@@ -65,8 +65,8 @@
 
             bowenos.storage.isVm = lib.mkDefault (host.isVm or false);
             bowenos.storage.diskMode = lib.mkDefault (host.diskMode or "mirror");
-            bowenos.storage.bootaById = lib.mkDefault (host.bootaById or "");
-            bowenos.storage.bootbById = lib.mkDefault (host.bootbById or "");
+            bowenos.storage.bootaById = lib.mkForce (host.bootaById or "");
+            bowenos.storage.bootbById = lib.mkForce (host.bootbById or "");
             bowenos.storage.bootMode = lib.mkDefault (host.bootMode or "uefi");
             bowenos.storage.bootbDiskPath = lib.mkDefault (host.bootbDiskPath or "");
           };
