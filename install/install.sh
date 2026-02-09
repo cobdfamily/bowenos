@@ -27,7 +27,7 @@ Commands:
   switch       Run nixos-rebuild switch for TARGET
   iscsi-check  Validate iSCSI backing devices exist
   hardware-scan  Generate hardware-configuration.nix into repo
-  repair        Rebuild installed system mounted at /mnt
+  repair        Rebuild installed system mounted at /mnt (via nixos-enter)
 USAGE
 }
 
@@ -140,12 +140,14 @@ case "${CMD}" in
     ;;
   repair)
     validate_hardware
-    export BOWENOS_HARDWARE_CONFIG="${HARDWARE_FILE}"
+    export BOWENOS_HARDWARE_CONFIG="/etc/nixos/hardware-configuration.nix"
     if ! mountpoint -q /mnt; then
       echo "/mnt is not a mountpoint. Mount rpool/root at /mnt first." >&2
       exit 2
     fi
-    nixos-rebuild switch --impure --flake "${ROOT}#${TARGET}" --root /mnt
+    nixos-enter --root /mnt -- \
+      env BOWENOS_HARDWARE_CONFIG="${BOWENOS_HARDWARE_CONFIG}" \
+      nixos-rebuild switch --impure --flake "/etc/nixos#${TARGET}"
     ;;
   *)
     usage
