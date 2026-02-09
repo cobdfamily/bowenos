@@ -68,6 +68,16 @@ case "${CMD}" in
     nix --extra-experimental-features "nix-command flakes" run --impure \
       github:nix-community/disko -- \
       --mode disko "${ROOT}/targets/${TARGET}/disks.nix"
+
+    echo
+    echo "Post-disko validation:"
+    if command -v zpool >/dev/null 2>&1; then
+      zpool import -N rpool >/dev/null 2>&1 || true
+      zpool get -H bootfs rpool || true
+      zfs list -r rpool || true
+    else
+      echo "  zpool not found; skipping ZFS validation."
+    fi
     ;;
   install)
     nixos-install --impure --flake "${ROOT}#${TARGET}"
