@@ -7,11 +7,7 @@
     disko.inputs.nixpkgs.follows = "nixpkgs";
     impermanence.url = "github:nix-community/impermanence";
     impermanence.inputs.nixpkgs.follows = "nixpkgs";
-    bowenos.url =
-      if builtins.pathExists "/tmp/installer" then
-        "path:/tmp/installer"
-      else
-        "github:cobdfamily/bowenos";
+    bowenos.url = "github:cobdfamily/bowenos";
   };
 
   outputs = { self, nixpkgs, disko, impermanence, bowenos, ... }:
