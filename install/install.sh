@@ -154,6 +154,15 @@ case "${CMD}" in
     fi
     set_local_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "diskMode" "\"${DISK_MODE}\""
 
+    # Boot mode
+    read -r -p "Boot mode (uefi/bios) [uefi]: " BOOT_MODE
+    BOOT_MODE="${BOOT_MODE:-uefi}"
+    if [[ "${BOOT_MODE}" != "uefi" && "${BOOT_MODE}" != "bios" ]]; then
+      echo "Invalid boot mode." >&2
+      exit 2
+    fi
+    set_local_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "bootMode" "\"${BOOT_MODE}\""
+
     # Admin user + SSH key
     read -r -p "Admin username [admin]: " ADMIN_USER
     ADMIN_USER="${ADMIN_USER:-admin}"

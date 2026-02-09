@@ -29,7 +29,9 @@ hosts/<hostname>/
   consolePassword = "";
 
   diskMode = "mirror";
+  bootMode = "uefi";
   isVm = false;
+  bootbDiskPath = "/dev/disk/by-id/EXAMPLE_DISK_B";
 
   # Disk IDs for disko (used by install.sh disko)
   bootaById = "nvme-EXAMPLE_DISK_A";
