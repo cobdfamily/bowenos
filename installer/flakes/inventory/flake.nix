@@ -60,7 +60,6 @@
             bowenos.storage.diskMode = lib.mkDefault (host.diskMode or "mirror");
           };
           hw = hostPath + "/hardware-configuration.nix";
-          local = hostPath + "/local.nix";
           identityDefaults = { ... }: {
             bowenos.identity.hostName = lib.mkDefault name;
             bowenos.identity.target = lib.mkDefault target;
@@ -68,17 +67,19 @@
         in
         nixpkgs.lib.nixosSystem {
           inherit system;
-          modules = [
-            disko.nixosModules.disko
-            impermanence.nixosModules.impermanence
-            "${bowenos.outPath}/targets/${target}/disks.nix"
-            "${bowenos.outPath}/targets/${target}/default.nix"
-            identityDefaults
-            shortModule
-            hostModule
-          ]
-          ++ (if builtins.pathExists hw then [ hw ] else [ ])
-          ++ (if builtins.pathExists local then [ local ] else [ ]);
+          modules =
+            [
+              disko.nixosModules.disko
+              impermanence.nixosModules.impermanence
+            ]
+            ++ (if builtins.pathExists hw then [ hw ] else [ ])
+            ++ [
+              "${bowenos.outPath}/targets/${target}/disks.nix"
+              "${bowenos.outPath}/targets/${target}/default.nix"
+              identityDefaults
+              shortModule
+              hostModule
+            ];
         };
     in {
       hostInfo = hostInfo;
