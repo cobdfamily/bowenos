@@ -8,7 +8,6 @@
     ../../modules/persistence.nix
     ../../hardware/server.nix
     ../../modules/boot.nix
-    ../../modules/efi-mirror.nix
     ../../modules/lan-bridge.nix
     ../../modules/services/incus.nix
     ../../modules/services/nfs.nix
@@ -28,12 +27,6 @@
   bowenos.lanBridge = {
     enable = true;
     bridgeName = "br0";
-  };
-
-  bowenos.efiMirror = {
-    enable = true;
-    mirrorMount = "/boot-mirror";
-    bootLabel = "NixOS (mirror)";
   };
 
   bowenos.iscsi.enable = true;

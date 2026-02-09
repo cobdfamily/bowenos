@@ -33,9 +33,18 @@ in
       ];
     }
     (lib.mkIf useEfi {
-      # Ensure EFI boot is configured.
-      boot.loader.systemd-boot.enable = true;
+      # GRUB on UEFI, mirrored EFI partitions.
+      boot.loader.grub.enable = true;
+      boot.loader.grub.efiSupport = true;
+      boot.loader.grub.zfsSupport = true;
+      boot.loader.grub.devices = [ "nodev" ];
       boot.loader.efi.canTouchEfiVariables = true;
+      boot.loader.efi.efiSysMountPoint = "/boot";
+      boot.loader.grub.mirroredBoots = [
+        { devices = [ "nodev" ]; path = "/boot"; }
+        { devices = [ "nodev" ]; path = "/boot-fallback"; }
+      ];
+      fileSystems."/boot-fallback".options = [ "nofail" "x-systemd.device-timeout=1s" ];
     })
     (lib.mkIf (!useEfi) {
       # BIOS boot via GRUB (ZFS support enabled).

@@ -27,7 +27,7 @@ let
   espMirrorPartition = {
     size = "512M";
     type = "EF00";
-    content = { type = "filesystem"; format = "vfat"; mountpoint = "/boot-mirror"; };
+    content = { type = "filesystem"; format = "vfat"; mountpoint = "/boot-fallback"; };
   };
 
   biosBootPartition = {
@@ -95,12 +95,14 @@ in
         xattr = "sa";
         acltype = "posixacl";
         normalization = "formD";
+        canmount = "off";
+        mountpoint = "none";
       };
 
       datasets = {
-        root = { type = "zfs_fs"; mountpoint = "/"; };
-        nix = { type = "zfs_fs"; mountpoint = "/nix"; };
-        persist = { type = "zfs_fs"; mountpoint = "/persist"; };
+        root = { type = "zfs_fs"; mountpoint = "legacy"; };
+        nix = { type = "zfs_fs"; mountpoint = "legacy"; };
+        persist = { type = "zfs_fs"; mountpoint = "legacy"; };
         incus = { type = "zfs_fs"; mountpoint = "/rpool-incus"; };
       };
     };

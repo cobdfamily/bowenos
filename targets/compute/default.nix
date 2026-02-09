@@ -8,7 +8,6 @@
     ../../modules/persistence.nix
     ../../hardware/server.nix
     ../../modules/boot.nix
-    ../../modules/efi-mirror.nix
     ../../modules/lan-bridge.nix
     ../../modules/services/incus.nix
   ];
@@ -26,14 +25,6 @@
   bowenos.lanBridge = {
     enable = true;
     bridgeName = "br0";
-  };
-
-  # EFI mirror uses BOOTB_BYID by default; override if needed:
-  # BOOTB_DISK_PATH=/dev/disk/by-id/<BOOTB_BYID>
-  bowenos.efiMirror = {
-    enable = true;
-    mirrorMount = "/boot-mirror";
-    bootLabel = "NixOS (mirror)";
   };
 
   system.stateVersion = "25.11";

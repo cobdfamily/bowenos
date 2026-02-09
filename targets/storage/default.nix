@@ -8,16 +8,9 @@
     ../../modules/persistence.nix
     ../../hardware/server.nix
     ../../modules/boot.nix
-    ../../modules/efi-mirror.nix
     ../../modules/services/nfs.nix
     ../../modules/services/iscsi.nix
   ];
-
-  bowenos.efiMirror = {
-    enable = true;
-    mirrorMount = "/boot-mirror";
-    bootLabel = "NixOS (mirror)";
-  };
 
   bowenos.iscsi.enable = true;
 

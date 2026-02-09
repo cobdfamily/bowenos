@@ -8,4 +8,8 @@
   services.zfs.autoScrub.enable = true;
   services.zfs.trim.enable = true;
 
+  fileSystems."/" = { device = "rpool/root"; fsType = "zfs"; };
+  fileSystems."/nix" = { device = "rpool/nix"; fsType = "zfs"; };
+  fileSystems."/persist" = { device = "rpool/persist"; fsType = "zfs"; };
+
 }

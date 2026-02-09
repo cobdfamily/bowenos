@@ -16,7 +16,7 @@ All targets include:
   - persists (files): `/etc/adjtime`, `/etc/machine-id`, `/var/lib/dbus/machine-id`
 - SSH locked down to **keys only**, **root login disabled**
 - Admin user created at build time from env vars
-- EFI mirror sync from `/boot` to `/boot-mirror` and a best-effort EFI boot entry creation
+- GRUB with mirrored EFI partitions (`/boot` and `/boot-fallback`)
 
 `compute`/`computeplusstorage` additionally include:
 - Incus init + ZFS-backed Incus storage pool
@@ -118,11 +118,6 @@ reboot
 cd /etc/nixos
 ./install/install.sh switch
 ```
-
-## EFI mirror specialisation
-If the primary EFI partition is unavailable, you can boot the specialisation that
-uses the mirror mount point. In the systemd-boot menu, choose the entry labeled
-`NixOS - efi-mirror`.
 
 ## NFS (computeplusstorage/storage only)
 NFS service is enabled. You set per-dataset exports manually, e.g.:

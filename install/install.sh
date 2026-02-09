@@ -39,7 +39,6 @@ case "${CMD}" in
     echo "BOOTA_BYID=${BOOTA_BYID:-}"
     echo "BOOTB_BYID=${BOOTB_BYID:-}"
     echo "BOOT_MODE=${BOOT_MODE:-}"
-    echo "BOOTB_DISK_PATH=${BOOTB_DISK_PATH:-}"
     echo "ADMIN_USER=${ADMIN_USER:-}"
     echo "SSH_PUBKEY set? $([[ -n ${SSH_PUBKEY:-} ]] && echo yes || echo no)"
     echo "SSH_PUBKEY_FILE=${SSH_PUBKEY_FILE:-}"
