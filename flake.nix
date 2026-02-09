@@ -23,19 +23,29 @@
       hostInfo =
         builtins.listToAttrs (map
           (name:
-            let host = import (./hosts + "/${name}/host.nix");
-            in { name = name; value = { target = host.target; system = host.system or defaultSystem; }; })
+            let
+              hostPath = ./hosts + "/${name}";
+              hostFile = hostPath + "/host.nix";
+              localFile = hostPath + "/local.nix";
+              host = if builtins.pathExists hostFile then import hostFile else import localFile;
+            in {
+              name = name;
+              value = { target = host.target; system = host.system or defaultSystem; };
+            })
           hostDirs);
 
       mkHost =
         name:
         let
-          host = import (./hosts + "/${name}/host.nix");
+          hostPath = ./hosts + "/${name}";
+          hostFile = hostPath + "/host.nix";
+          localFile = hostPath + "/local.nix";
+          host = if builtins.pathExists hostFile then import hostFile else import localFile;
           system = host.system or defaultSystem;
           target = host.target;
-          hostModule = host.module or (throw "hosts/${name}/host.nix must export { target, module }");
-          hw = ./hosts + "/${name}/hardware-configuration.nix";
-          local = ./hosts + "/${name}/local.nix";
+          hostModule = host.module or (throw "hosts/${name}/local.nix must export { target, module }");
+          hw = hostPath + "/hardware-configuration.nix";
+          local = hostPath + "/local.nix";
         in
         nixpkgs.lib.nixosSystem {
           inherit system;

@@ -4,12 +4,11 @@ Each host lives in its own directory:
 
 ```
 hosts/<hostname>/
-  host.nix
   local.nix
   hardware-configuration.nix
 ```
 
-`host.nix` must export:
+`local.nix` must export:
 
 ```nix
 {
@@ -23,5 +22,5 @@ hosts/<hostname>/
 }
 ```
 
-`local.nix` can include host-specific overrides (tracked), and
+`local.nix` is the host-specific config (tracked), and
 `hardware-configuration.nix` is the standard output of `nixos-generate-config`.
