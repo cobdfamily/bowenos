@@ -7,7 +7,7 @@
     ../../modules/networking.nix
     ../../modules/storage-zfs.nix
     ../../modules/persistence.nix
-    ../../hardware/server.nix
+    ../../modules/console-serial.nix
     ../../modules/boot.nix
     ../../modules/services/nfs.nix
     ../../modules/services/iscsi.nix
