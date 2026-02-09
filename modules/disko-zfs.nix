@@ -102,18 +102,18 @@ in
       datasets = {
         root = {
           type = "zfs_fs";
-          mountpoint = null;
-          properties.mountpoint = "legacy";
+          mountpoint = "/";
+          options.mountpoint = "legacy";
         };
         nix = {
           type = "zfs_fs";
-          mountpoint = null;
-          properties.mountpoint = "legacy";
+          mountpoint = "/nix";
+          options.mountpoint = "legacy";
         };
         persist = {
           type = "zfs_fs";
-          mountpoint = null;
-          properties.mountpoint = "legacy";
+          mountpoint = "/persist";
+          options.mountpoint = "legacy";
         };
         incus = { type = "zfs_fs"; mountpoint = "/rpool-incus"; };
       };
