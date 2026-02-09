@@ -60,6 +60,18 @@
             bowenos.storage.bootaById = lib.mkForce (host.bootaById or "");
             bowenos.storage.bootbById = lib.mkForce (host.bootbById or "");
           };
+          debugAssert = { lib, ... }: {
+            assertions = [
+              {
+                assertion = (host.bootaById or "") != "";
+                message = "inventory debug: host.bootaById is empty (host=${name})";
+              }
+              {
+                assertion = (host.bootbById or "") != "";
+                message = "inventory debug: host.bootbById is empty (host=${name})";
+              }
+            ];
+          };
         in
         nixpkgs.lib.nixosSystem {
           inherit system;
@@ -71,6 +83,7 @@
             ++ (if builtins.pathExists hw then [ hw ] else [ ])
             ++ [
               identityDefaults
+              debugAssert
               diskDefaults
               hostModule
               "${bowenos.outPath}/targets/${target}/disks.nix"
