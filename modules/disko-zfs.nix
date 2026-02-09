@@ -84,7 +84,10 @@ in
     zpool.rpool = {
       type = "zpool";
       mode = if useMirror then "mirror" else "single";
-      options = { ashift = "12"; autotrim = "on"; bootfs = "rpool/root"; };
+      options = { ashift = "12"; autotrim = "on"; };
+      postCreateHook = ''
+        zpool set bootfs=rpool/root rpool
+      '';
 
       rootFsOptions = {
         compression = "zstd";
