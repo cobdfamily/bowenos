@@ -112,7 +112,8 @@ case "${CMD}" in
     if [[ -f /etc/nixos/hardware-configuration.nix ]]; then
       export BOWENOS_HARDWARE_CONFIG="/etc/nixos/hardware-configuration.nix"
     fi
-    sudo nixos-rebuild switch --impure --flake "${ROOT}#${TARGET}"
+    sudo env BOWENOS_HARDWARE_CONFIG="${BOWENOS_HARDWARE_CONFIG}" \
+      nixos-rebuild switch --impure --flake "${ROOT}#${TARGET}"
     ;;
   iscsi-check)
     fail=0
