@@ -25,6 +25,7 @@ Commands:
   disko        Partition + create mirrored rpool (destructive)
   install      Run nixos-install for TARGET
   switch       Run nixos-rebuild switch for TARGET
+  rebuild      Run nixos-rebuild switch for TARGET (no sudo)
   iscsi-check  Validate iSCSI backing devices exist
   hardware-scan  Generate hardware-configuration.nix into repo
   repair        Rebuild installed system mounted at /mnt (via nixos-enter)
@@ -108,6 +109,9 @@ case "${CMD}" in
     ;;
   switch)
     sudo nixos-rebuild switch --impure --flake "${ROOT}#${TARGET}"
+    ;;
+  rebuild)
+    nixos-rebuild switch --impure --flake "${ROOT}#${TARGET}"
     ;;
   iscsi-check)
     fail=0
