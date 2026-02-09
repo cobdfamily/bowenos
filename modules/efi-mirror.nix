@@ -1,15 +1,13 @@
 { lib, pkgs, config, ... }:
 let
   cfg = config.bowenos.efiMirror;
-  get = name: def: let v = builtins.getEnv name; in if v == "" then def else v;
-
-  # Derive mirror disk from BOOTB_BYID unless BOOTB_DISK_PATH is supplied.
-  bootbById = get "BOOTB_BYID" "";
+  bootbById = config.bowenos.storage.bootbById;
+  bootbDiskPath = config.bowenos.storage.bootbDiskPath;
   derivedDisk = if bootbById == "" then "/dev/disk/by-id/BOOTB_PLACEHOLDER" else (
     if lib.hasPrefix "/dev/" bootbById then bootbById else "/dev/disk/by-id/" + bootbById
   );
 
-  mirrorDisk = get "BOOTB_DISK_PATH" derivedDisk;
+  mirrorDisk = if bootbDiskPath == "" then derivedDisk else bootbDiskPath;
 in
 {
   options.bowenos.efiMirror = {

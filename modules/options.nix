@@ -21,6 +21,10 @@
     storage = {
       diskMode = lib.mkOption { type = lib.types.enum [ "mirror" "single" ]; default = "mirror"; };
       isVm = lib.mkOption { type = lib.types.bool; default = false; };
+      bootaById = lib.mkOption { type = lib.types.str; default = ""; };
+      bootbById = lib.mkOption { type = lib.types.str; default = ""; };
+      bootMode = lib.mkOption { type = lib.types.enum [ "uefi" "bios" ]; default = "uefi"; };
+      bootbDiskPath = lib.mkOption { type = lib.types.str; default = ""; };
     };
   };
 }

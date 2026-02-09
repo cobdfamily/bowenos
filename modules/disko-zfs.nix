@@ -1,9 +1,7 @@
 { lib, config ? {}, ... }:
 let
-  get = name: def: let v = builtins.getEnv name; in if v == "" then def else v;
-
-  boota = get "BOOTA_BYID" "";
-  bootb = get "BOOTB_BYID" "";
+  boota = lib.attrByPath [ "bowenos" "storage" "bootaById" ] "" config;
+  bootb = lib.attrByPath [ "bowenos" "storage" "bootbById" ] "" config;
 
   mkPath = x: if lib.hasPrefix "/dev/" x then x else "/dev/disk/by-id/" + x;
 
@@ -15,7 +13,7 @@ let
   useMirror = diskMode == "mirror";
 
   # Boot mode: uefi (default) or bios
-  bootMode = get "BOOT_MODE" "uefi";
+  bootMode = lib.attrByPath [ "bowenos" "storage" "bootMode" ] "uefi" config;
   useEfi = bootMode == "uefi";
 
   espPartition = {
@@ -61,18 +59,18 @@ let
 in
 {
   assertions = [
-    { assertion = boota != ""; message = "BOOTA_BYID is required (set in .env or env)."; }
+    { assertion = boota != ""; message = "bootaById is required in host local.nix."; }
     {
       assertion = (!useMirror) || bootb != "";
-      message = "BOOTB_BYID is required when DISK_MODE=mirror.";
+      message = "bootbById is required when diskMode=mirror.";
     }
     {
       assertion = (!useMirror) || (bootaPath != bootbPath);
-      message = "BOOTA_BYID and BOOTB_BYID must be different disks when DISK_MODE=mirror.";
+      message = "bootaById and bootbById must be different disks when diskMode=mirror.";
     }
     {
       assertion = (bootMode == "uefi") || (bootMode == "bios");
-      message = "BOOT_MODE must be 'uefi' or 'bios'.";
+      message = "bootMode must be 'uefi' or 'bios'.";
     }
   ];
 

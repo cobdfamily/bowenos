@@ -1,17 +1,16 @@
 { lib, config, ... }:
 let
-  get = name: def: let v = builtins.getEnv name; in if v == "" then def else v;
   mkPath = x: if lib.hasPrefix "/dev/" x then x else "/dev/disk/by-id/" + x;
 
-  boota = get "BOOTA_BYID" "";
-  bootb = get "BOOTB_BYID" "";
+  boota = lib.attrByPath [ "bowenos" "storage" "bootaById" ] "" config;
+  bootb = lib.attrByPath [ "bowenos" "storage" "bootbById" ] "" config;
   bootaPath = mkPath boota;
   bootbPath = mkPath bootb;
 
   diskMode = lib.attrByPath [ "bowenos" "storage" "diskMode" ] "mirror" config;
   useMirror = diskMode == "mirror";
 
-  bootMode = get "BOOT_MODE" "uefi";
+  bootMode = lib.attrByPath [ "bowenos" "storage" "bootMode" ] "uefi" config;
   useEfi = bootMode == "uefi";
 in
 {
@@ -20,15 +19,15 @@ in
       assertions = [
         {
           assertion = (bootMode == "uefi") || (bootMode == "bios");
-          message = "BOOT_MODE must be 'uefi' or 'bios'.";
+          message = "bootMode must be 'uefi' or 'bios'.";
         }
         {
           assertion = (bootMode != "bios") || (boota != "");
-          message = "BOOTA_BYID is required when BOOT_MODE=bios.";
+          message = "bootaById is required when bootMode=bios.";
         }
         {
           assertion = (!useMirror) || (bootb != "");
-          message = "BOOTB_BYID is required when DISK_MODE=mirror.";
+          message = "bootbById is required when diskMode=mirror.";
         }
       ];
     }
