@@ -12,8 +12,8 @@ This repo provides three flake targets:
 All targets include:
 - ZFS mirrored boot pool via **disko**
 - Ephemeral root via **impermanence**
-  - persists (directories): `/etc/ssh`, `/opt/cprail`, `/var/lib/incus`, `/var/lib/nixos`, `/var/lib/systemd/coredump`, `/var/log`
-  - persists (files): `/etc/adjtime`, `/etc/hostid`, `/etc/machine-id`, `/var/lib/dbus/machine-id`
+  - persists (directories): `/opt/cprail`, `/var/lib/incus`, `/var/lib/nixos`, `/var/lib/systemd/coredump`, `/var/log`
+  - persists (files): `/etc/adjtime`, `/etc/hostid`, `/etc/machine-id`, `/etc/ssh/ssh_host_ecdsa_key`, `/etc/ssh/ssh_host_ecdsa_key.pub`, `/etc/ssh/ssh_host_ed25519_key`, `/etc/ssh/ssh_host_ed25519_key.pub`, `/etc/ssh/ssh_host_rsa_key`, `/etc/ssh/ssh_host_rsa_key.pub`, `/var/lib/dbus/machine-id`
 - SSH locked down to **keys only**, **root login disabled**
 - Admin user created at build time from env vars
 - GRUB with mirrored EFI partitions (`/boot` and `/boot-fallback`)
