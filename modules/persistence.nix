@@ -15,6 +15,7 @@
     ];
     files = [
       "/etc/machine-id"
+      "/etc/hostid"
       "/var/lib/dbus/machine-id"
       "/etc/adjtime"
     ];

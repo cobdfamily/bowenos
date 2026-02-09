@@ -13,7 +13,7 @@ All targets include:
 - ZFS mirrored boot pool via **disko**
 - Ephemeral root via **impermanence**
   - persists (directories): `/etc/ssh`, `/opt/cprail`, `/var/lib/incus`, `/var/lib/nixos`, `/var/lib/systemd/coredump`, `/var/log`
-  - persists (files): `/etc/adjtime`, `/etc/machine-id`, `/var/lib/dbus/machine-id`
+  - persists (files): `/etc/adjtime`, `/etc/hostid`, `/etc/machine-id`, `/var/lib/dbus/machine-id`
 - SSH locked down to **keys only**, **root login disabled**
 - Admin user created at build time from env vars
 - GRUB with mirrored EFI partitions (`/boot` and `/boot-fallback`)
