@@ -31,6 +31,10 @@ hosts/<hostname>/
   diskMode = "mirror";
   isVm = false;
 
+  # Disk IDs for disko (used by install.sh disko)
+  bootaById = "nvme-EXAMPLE_DISK_A";
+  bootbById = "nvme-EXAMPLE_DISK_B";
+
   # Optional: full module for advanced overrides
   module = { ... }: { };
 }

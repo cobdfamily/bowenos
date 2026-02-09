@@ -64,13 +64,19 @@ case "${CMD}" in
     nix build "${ROOT}#iso"
     ;;
   disko)
-    if [[ -z "${BOOTA_BYID:-}" || -z "${BOOTB_BYID:-}" ]]; then
-      echo "Set BOOTA_BYID and BOOTB_BYID in .env or env." >&2
-      exit 2
-    fi
     if [[ -n "${HOST}" ]]; then
       TARGET="$(nix eval --raw "${INVENTORY_ROOT}#hostInfo.${HOST}.target")"
       HARDWARE_FILE="${INVENTORY_ROOT}/hosts/${HOST}/hardware-configuration.nix"
+      if [[ -z "${BOOTA_BYID:-}" ]]; then
+        BOOTA_BYID="$(nix eval --raw "${INVENTORY_ROOT}#hosts.${HOST}.bootaById")"
+      fi
+      if [[ -z "${BOOTB_BYID:-}" ]]; then
+        BOOTB_BYID="$(nix eval --raw "${INVENTORY_ROOT}#hosts.${HOST}.bootbById")"
+      fi
+    fi
+    if [[ -z "${BOOTA_BYID:-}" || -z "${BOOTB_BYID:-}" ]]; then
+      echo "Set BOOTA_BYID and BOOTB_BYID or add bootaById/bootbById to hosts/${HOST}/local.nix." >&2
+      exit 2
     fi
     if [[ "${FORCE:-0}" != "1" ]]; then
       echo "⚠️  About to WIPE and repartition:"

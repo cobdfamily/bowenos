@@ -82,6 +82,21 @@
         };
     in {
       hostInfo = hostInfo;
+      hosts =
+        builtins.listToAttrs (map
+          (name:
+            let
+              hostPath = ./hosts + "/${name}";
+              localFile = hostPath + "/local.nix";
+              host = import localFile;
+            in {
+              name = name;
+              value = {
+                bootaById = host.bootaById or "";
+                bootbById = host.bootbById or "";
+              };
+            })
+          hostDirs);
       nixosConfigurations =
         builtins.listToAttrs (map (name: { name = name; value = mkHost name; }) hostDirs);
     };
