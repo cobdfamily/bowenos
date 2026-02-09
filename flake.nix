@@ -1,5 +1,5 @@
 {
-  description = "Role-based NixOS kit (compute, computeplusstorage): disko + impermanence + incus + optional iscsi/nfs";
+  description = "Target-based NixOS kit (compute, computeplusstorage, storage): disko + impermanence + incus + optional iscsi/nfs";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";

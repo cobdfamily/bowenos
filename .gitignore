@@ -1,6 +1,5 @@
 result*
 .direnv/
-.envrc
 .DS_Store
 .vscode/
 .idea/

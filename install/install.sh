@@ -190,15 +190,11 @@ case "${CMD}" in
     fi
     if [[ -n "${HOST}" ]]; then
       TARGET="$(nix eval --raw "${INVENTORY_ROOT}#hostInfo.${HOST}.target")"
-      if [[ -z "${BOOTA_BYID:-}" ]]; then
-        BOOTA_BYID="$(nix eval --raw "${INVENTORY_ROOT}#hosts.${HOST}.bootaById")"
-      fi
-      if [[ -z "${BOOTB_BYID:-}" ]]; then
-        BOOTB_BYID="$(nix eval --raw "${INVENTORY_ROOT}#hosts.${HOST}.bootbById")"
-      fi
+      BOOTA_BYID="$(nix eval --raw "${INVENTORY_ROOT}#hosts.${HOST}.bootaById")"
+      BOOTB_BYID="$(nix eval --raw "${INVENTORY_ROOT}#hosts.${HOST}.bootbById")"
     fi
     if [[ -z "${BOOTA_BYID:-}" || -z "${BOOTB_BYID:-}" ]]; then
-      echo "Set bootaById/bootbById in hosts/${HOST}/local.nix (or export BOOTA_BYID/BOOTB_BYID for ad-hoc runs)." >&2
+      echo "Set bootaById/bootbById in hosts/${HOST}/local.nix." >&2
       exit 2
     fi
     if [[ "${FORCE:-0}" != "1" ]]; then
