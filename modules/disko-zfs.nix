@@ -100,9 +100,21 @@ in
       };
 
       datasets = {
-        root = { type = "zfs_fs"; mountpoint = "legacy"; };
-        nix = { type = "zfs_fs"; mountpoint = "legacy"; };
-        persist = { type = "zfs_fs"; mountpoint = "legacy"; };
+        root = {
+          type = "zfs_fs";
+          mountpoint = null;
+          properties.mountpoint = "legacy";
+        };
+        nix = {
+          type = "zfs_fs";
+          mountpoint = null;
+          properties.mountpoint = "legacy";
+        };
+        persist = {
+          type = "zfs_fs";
+          mountpoint = null;
+          properties.mountpoint = "legacy";
+        };
         incus = { type = "zfs_fs"; mountpoint = "/rpool-incus"; };
       };
     };
