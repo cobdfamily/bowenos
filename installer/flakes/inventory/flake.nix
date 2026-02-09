@@ -8,7 +8,7 @@
     impermanence.url = "github:nix-community/impermanence";
     impermanence.inputs.nixpkgs.follows = "nixpkgs";
     bowenos.url =
-      if builtins.pathExists /tmp/installer then
+      if builtins.pathExists "/tmp/installer" then
         "path:/tmp/installer"
       else
         "github:cobdfamily/bowenos";
