@@ -29,7 +29,14 @@
               host = import localFile;
             in {
               name = name;
-              value = { target = host.target; system = host.system or defaultSystem; };
+              value = {
+                target = host.target;
+                system = host.system or defaultSystem;
+                bootaById = host.bootaById or "";
+                bootbById = host.bootbById or "";
+                diskMode = host.diskMode or "mirror";
+                bootMode = host.bootMode or "uefi";
+              };
             })
           hostDirs);
 

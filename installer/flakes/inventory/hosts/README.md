@@ -44,3 +44,7 @@ hosts/<hostname>/
 
 `local.nix` is the host-specific config (tracked), and
 `hardware-configuration.nix` is the standard output of `nixos-generate-config`.
+
+Inventory outputs:
+- `hostInfo.<host>.bootaById`, `hostInfo.<host>.bootbById`, `hostInfo.<host>.diskMode`, `hostInfo.<host>.bootMode`
+- `hosts.<host>.bootaById`, `hosts.<host>.bootbById`
