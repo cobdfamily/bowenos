@@ -1,4 +1,3 @@
-local.nix
 result*
 .direnv/
 .envrc

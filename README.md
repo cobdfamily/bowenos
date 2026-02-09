@@ -47,36 +47,23 @@ TARGET=storage ./install/install.sh disko
 TARGET=storage ./install/install.sh install
 ```
 
-You can also set `TARGET=compute`, `TARGET=computeplusstorage`, or `TARGET=storage` via `HOST` inventory or your shell.
+You can set the target via host inventory or by exporting `TARGET` for ad‑hoc runs.
 
-## Environment variables (implemented)
+## Host inventory (recommended)
 
-These are read from host inventory `local.nix` files (recommended).
+All host-specific settings live in `installer/flakes/inventory/hosts/<hostname>/local.nix`.
+These are mapped into `bowenos.*` by the inventory flake.
 
-### Required
-- `BOOTA_BYID` — boot disk A (by-id basename like `nvme-...` or full `/dev/...` path)
-- `BOOTB_BYID` — boot disk B (by-id basename or full path). Required when `DISK_MODE=mirror`.
-- `HOSTID` — 8 hex characters (required by ZFS; example `deadbeef`)
-
-### Strongly recommended
-- `HOSTNAME` — hostname for the machine (letters/digits/hyphens)
-- `ADMIN_USER` — admin username to create
-- `SSH_PUBKEY` or `SSH_PUBKEY_FILE` — your public SSH key
-
-### Locale / time
-- `TIMEZONE` — e.g. `America/Vancouver`
-- `LOCALE` — e.g. `en_CA.UTF-8`
-
-### Safeguards / policy
-- `SUDO_NEEDS_PASSWORD` — `true` or `false`
-- `ALLOW_NO_SSH_KEY` — `true` to allow console-only bootstrap without a key
-- `MUTABLE_USERS` — `true` to allow manual user/group changes outside Nix; default is immutable users for reproducibility
-
-### Optional
-- `TARGET` — choose the flake target (`compute`, `computeplusstorage`, or `storage`); written to `/etc/bowenos-target`
-- `BOOT_MODE` — `uefi` (default) or `bios` (uses GRUB when `bios`)
-- `IS_VM` — `true` to use `/dev/disk/by-path` in initrd (useful when by-id links are unreliable in VMs)
-- `BOOTB_DISK_PATH` — explicit disk path for efibootmgr (default derived from `BOOTB_BYID`)
+Key fields:
+- `target` — `compute`, `computeplusstorage`, or `storage`
+- `hostId` — 8 hex chars (required by ZFS)
+- `timeZone`, `locale`
+- `adminUser`, `sshPubKey`, `allowNoKey`, `sudoNeedsPassword`, `mutableUsers`, `consolePassword`
+- `diskMode` — `mirror` or `single`
+- `bootMode` — `uefi` or `bios`
+- `isVm` — `true` to use `/dev/disk/by-path` in initrd
+- `bootaById`, `bootbById` — disk by-id basenames
+- `bootbDiskPath` — explicit `/dev/...` path for efibootmgr (optional)
 
 ## Install steps (from NixOS installer)
 

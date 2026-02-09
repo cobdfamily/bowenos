@@ -13,7 +13,6 @@ usage() {
 Usage: install.sh <command>
 
 Commands:
-  show-env     Print key environment values
   iso          Build the bootstrap ISO
   setup        Create /tmp/bowenos inventory for a new host
   disko        Partition + create mirrored rpool (destructive)
@@ -104,24 +103,6 @@ select_disk_by_id() {
 }
 
 case "${CMD}" in
-  show-env)
-    echo "HOST=${HOST:-}"
-    echo "TARGET=${TARGET}"
-    echo "TARGET(from env)=${TARGET}"
-    echo "HOSTNAME=${HOSTNAME:-}"
-    echo "HOSTID=${HOSTID:-}"
-    echo "TIMEZONE=${TIMEZONE:-}"
-    echo "LOCALE=${LOCALE:-}"
-    echo "BOOTA_BYID=${BOOTA_BYID:-}"
-    echo "BOOTB_BYID=${BOOTB_BYID:-}"
-    echo "BOOT_MODE=${BOOT_MODE:-}"
-    echo "ADMIN_USER=${ADMIN_USER:-}"
-    echo "SSH_PUBKEY set? $([[ -n ${SSH_PUBKEY:-} ]] && echo yes || echo no)"
-    echo "SSH_PUBKEY_FILE=${SSH_PUBKEY_FILE:-}"
-    echo "SUDO_NEEDS_PASSWORD=${SUDO_NEEDS_PASSWORD:-}"
-    echo "ALLOW_NO_SSH_KEY=${ALLOW_NO_SSH_KEY:-}"
-    echo "MUTABLE_USERS=${MUTABLE_USERS:-}"
-    ;;
   iso)
     nix build "${ROOT}#iso"
     ;;
@@ -217,7 +198,7 @@ case "${CMD}" in
       fi
     fi
     if [[ -z "${BOOTA_BYID:-}" || -z "${BOOTB_BYID:-}" ]]; then
-      echo "Set BOOTA_BYID and BOOTB_BYID or add bootaById/bootbById to hosts/${HOST}/local.nix." >&2
+      echo "Set bootaById/bootbById in hosts/${HOST}/local.nix (or export BOOTA_BYID/BOOTB_BYID for ad-hoc runs)." >&2
       exit 2
     fi
     if [[ "${FORCE:-0}" != "1" ]]; then
