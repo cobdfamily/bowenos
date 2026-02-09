@@ -242,9 +242,9 @@ case "${CMD}" in
     fi
     select_host_if_needed
     if [[ -n "${HOST}" ]]; then
-      TARGET="$(nix eval --raw "${INVENTORY_ROOT}#hostInfo.${HOST}.target")"
-      BOOTA_BYID="$(nix eval --raw "${INVENTORY_ROOT}#hosts.${HOST}.bootaById")"
-      BOOTB_BYID="$(nix eval --raw "${INVENTORY_ROOT}#hosts.${HOST}.bootbById")"
+      TARGET="$(nix eval --raw "path:${INVENTORY_ROOT}#hostInfo.${HOST}.target")"
+      BOOTA_BYID="$(nix eval --raw "path:${INVENTORY_ROOT}#hosts.${HOST}.bootaById")"
+      BOOTB_BYID="$(nix eval --raw "path:${INVENTORY_ROOT}#hosts.${HOST}.bootbById")"
     fi
     if [[ -z "${BOOTA_BYID:-}" || -z "${BOOTB_BYID:-}" ]]; then
       echo "Set bootaById/bootbById in hosts/${HOST}/local.nix." >&2
