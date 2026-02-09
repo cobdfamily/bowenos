@@ -171,6 +171,18 @@ case "${CMD}" in
     fi
     set_local_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "diskMode" "\"${DISK_MODE}\""
 
+    # Admin user + SSH key
+    read -r -p "Admin username [admin]: " ADMIN_USER
+    ADMIN_USER="${ADMIN_USER:-admin}"
+    set_local_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "adminUser" "\"${ADMIN_USER}\""
+
+    read -r -p "SSH public key: " SSH_KEY
+    if [[ -z "${SSH_KEY}" ]]; then
+      echo "SSH public key is required." >&2
+      exit 2
+    fi
+    set_local_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "sshPubKey" "\"${SSH_KEY}\""
+
     # Disk selection menu
     mapfile -t disks < <(ls -1 /dev/disk/by-id | grep -v -- '-part' | sort -u)
     if [[ ${#disks[@]} -eq 0 ]]; then

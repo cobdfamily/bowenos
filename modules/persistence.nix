@@ -6,6 +6,7 @@
   environment.persistence."/persist" = {
     hideMounts = true;
     directories = [
+      "/etc/bowenos"
       "/opt/cprail"
       "/var/lib/incus"
       "/var/lib/nixos"
