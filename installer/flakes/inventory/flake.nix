@@ -7,7 +7,7 @@
     disko.inputs.nixpkgs.follows = "nixpkgs";
     impermanence.url = "github:nix-community/impermanence";
     impermanence.inputs.nixpkgs.follows = "nixpkgs";
-    bowenos.url = "path:../../..";
+    bowenos.url = "github:cobdfamily/bowenos";
   };
 
   outputs = { self, nixpkgs, disko, impermanence, bowenos, ... }:
