@@ -16,6 +16,7 @@ Usage: install.sh <command>
 Commands:
   show-env     Print key environment values
   iso          Build the bootstrap ISO
+  setup        Create /tmp/bowenos inventory for a new host
   disko        Partition + create mirrored rpool (destructive)
   install      Run nixos-install for TARGET
   switch       Run nixos-rebuild switch for TARGET
@@ -41,6 +42,84 @@ validate_hardware() {
   fi
 }
 
+set_local_nix_value() {
+  local file="$1"
+  local key="$2"
+  local value="$3"
+  local tmp
+  tmp="$(mktemp)"
+
+  awk -v k="${key}" -v v="${value}" '
+    BEGIN { found = 0; }
+    $0 ~ "^[[:space:]]*" k "[[:space:]]*=" {
+      print "  " k " = " v ";"
+      found = 1
+      next
+    }
+    { print }
+    END {
+      if (!found) {
+        # Insert before last } if present, otherwise append.
+        if (NR > 0) {
+          # handled by second pass
+        }
+      }
+    }
+  ' "${file}" > "${tmp}"
+
+  if ! grep -q "^[[:space:]]*${key}[[:space:]]*=" "${tmp}"; then
+    awk -v k="${key}" -v v="${value}" '
+      BEGIN { inserted = 0; }
+      /}[[:space:]]*$/ && !inserted {
+        print "  " k " = " v ";"
+        inserted = 1
+      }
+      { print }
+      END {
+        if (!inserted) {
+          print "  " k " = " v ";"
+        }
+      }
+    ' "${tmp}" > "${tmp}.2"
+    mv "${tmp}.2" "${tmp}"
+  fi
+
+  mv "${tmp}" "${file}"
+}
+
+select_disk_by_id() {
+  local prompt="$1"
+  local -n _choices=$2
+  local -n _selected=$3
+
+  while true; do
+    echo "${prompt}"
+    local i=1
+    for d in "${_choices[@]}"; do
+      echo "  ${i}) ${d}"
+      i=$((i + 1))
+    done
+    read -r -p "Select disk number: " idx
+    if [[ "${idx}" =~ ^[0-9]+$ ]] && (( idx >= 1 && idx <= ${#_choices[@]} )); then
+      local choice="${_choices[$((idx-1))]}"
+      # ensure not already selected
+      for s in "${_selected[@]}"; do
+        if [[ "${s}" == "${choice}" ]]; then
+          echo "Disk already selected. Choose a different disk."
+          choice=""
+          break
+        fi
+      done
+      if [[ -n "${choice}" ]]; then
+        _selected+=("${choice}")
+        break
+      fi
+    else
+      echo "Invalid selection."
+    fi
+  done
+}
+
 case "${CMD}" in
   show-env)
     echo "HOST=${HOST:-}"
@@ -62,6 +141,63 @@ case "${CMD}" in
     ;;
   iso)
     nix build "${ROOT}#iso"
+    ;;
+  setup)
+    read -r -p "Hostname: " HOSTNAME
+    if [[ -z "${HOSTNAME}" ]]; then
+      echo "Hostname is required." >&2
+      exit 2
+    fi
+
+    rm -rf /tmp/bowenos
+    mkdir -p /tmp/bowenos
+
+    # Copy inventory flake
+    cp "${INVENTORY_ROOT}/flake.nix" /tmp/bowenos/flake.nix
+    if [[ -f "${INVENTORY_ROOT}/flake.lock" ]]; then
+      cp "${INVENTORY_ROOT}/flake.lock" /tmp/bowenos/flake.lock
+    fi
+
+    # Copy example host
+    mkdir -p "/tmp/bowenos/hosts/${HOSTNAME}"
+    cp "${INVENTORY_ROOT}/hosts/example/local.nix" "/tmp/bowenos/hosts/${HOSTNAME}/local.nix"
+
+    # Disk mode
+    read -r -p "Disk mode (mirror/single) [mirror]: " DISK_MODE
+    DISK_MODE="${DISK_MODE:-mirror}"
+    if [[ "${DISK_MODE}" != "mirror" && "${DISK_MODE}" != "single" ]]; then
+      echo "Invalid disk mode." >&2
+      exit 2
+    fi
+    set_local_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "diskMode" "\"${DISK_MODE}\""
+
+    # Disk selection menu
+    mapfile -t disks < <(ls -1 /dev/disk/by-id | grep -vE '-part' | sort -u)
+    if [[ ${#disks[@]} -eq 0 ]]; then
+      echo "No disks found in /dev/disk/by-id." >&2
+      exit 2
+    fi
+
+    selected=()
+    select_disk_by_id "Select BOOTA_BYID:" disks selected
+    if [[ "${DISK_MODE}" == "mirror" ]]; then
+      select_disk_by_id "Select BOOTB_BYID:" disks selected
+    fi
+
+    set_local_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "bootaById" "\"${selected[0]}\""
+    if [[ "${DISK_MODE}" == "mirror" ]]; then
+      set_local_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "bootbById" "\"${selected[1]}\""
+    else
+      set_local_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "bootbById" "\"\""
+    fi
+
+    # Hardware scan
+    rm -rf /tmp/hardware
+    mkdir -p /tmp/hardware
+    nixos-generate-config --root /tmp/hardware
+    cp /tmp/hardware/etc/nixos/hardware-configuration.nix "/tmp/bowenos/hosts/${HOSTNAME}/hardware-configuration.nix"
+
+    echo "Inventory written to /tmp/bowenos/hosts/${HOSTNAME}"
     ;;
   disko)
     if [[ -n "${HOST}" ]]; then
