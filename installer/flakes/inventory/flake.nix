@@ -54,6 +54,12 @@
             bowenos.identity.hostName = lib.mkDefault name;
             bowenos.identity.target = lib.mkDefault target;
           };
+          diskDefaults = { lib, ... }: {
+            bowenos.storage.diskMode = lib.mkDefault (host.diskMode or "mirror");
+            bowenos.storage.bootMode = lib.mkDefault (host.bootMode or "uefi");
+            bowenos.storage.bootaById = lib.mkForce (host.bootaById or "");
+            bowenos.storage.bootbById = lib.mkForce (host.bootbById or "");
+          };
         in
         nixpkgs.lib.nixosSystem {
           inherit system;
@@ -65,6 +71,7 @@
             ++ (if builtins.pathExists hw then [ hw ] else [ ])
             ++ [
               identityDefaults
+              diskDefaults
               hostModule
               "${bowenos.outPath}/targets/${target}/disks.nix"
               "${bowenos.outPath}/targets/${target}/default.nix"
