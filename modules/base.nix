@@ -5,8 +5,10 @@ let
 in
 {
   imports =
-    (lib.optional (builtins.pathExists ../hardware-configuration.nix) ../hardware-configuration.nix)
-    ++ [
+    [
+      (if builtins.pathExists ../hardware-configuration.nix
+       then ../hardware-configuration.nix
+       else throw "hardware-configuration.nix is required (run ./install/install.sh hardware-scan)")
       ./options.nix
       ./env.nix
     ]
