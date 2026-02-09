@@ -15,9 +15,8 @@ hosts/<hostname>/
   target = "computeplusstorage"; # or compute/storage
   system = "x86_64-linux";       # optional
   module = { ... }: {
-    bowenos.identity.hostName = "<hostname>";
+    # hostName defaults to the directory name
     bowenos.identity.hostId = "deadbeef";
-    bowenos.identity.target = "<target>";
   };
 }
 ```
