@@ -238,10 +238,36 @@ case "${CMD}" in
     fi
     ;;
   install)
-    if [[ -n "${HOST}" ]]; then
-      nixos-install --impure --flake "${INVENTORY_ROOT}#${HOST}"
+    if [[ -f /tmp/bowenos/flake.nix ]]; then
+      if [[ -z "${HOST}" ]]; then
+        if [[ -d /tmp/bowenos/hosts ]]; then
+          mapfile -t _hosts < <(find /tmp/bowenos/hosts -mindepth 1 -maxdepth 1 -type d -printf "%f\n" | sort)
+          if [[ ${#_hosts[@]} -eq 1 ]]; then
+            HOST="${_hosts[0]}"
+          else
+            echo "HOST is not set. Select a host:"
+            local i=1
+            for h in "${_hosts[@]}"; do
+              echo "  ${i}) ${h}"
+              i=$((i + 1))
+            done
+            read -r -p "Select host number: " idx
+            if [[ "${idx}" =~ ^[0-9]+$ ]] && (( idx >= 1 && idx <= ${#_hosts[@]} )); then
+              HOST="${_hosts[$((idx-1))]}"
+            else
+              echo "Invalid selection." >&2
+              exit 2
+            fi
+          fi
+        else
+          echo "HOST is not set and /tmp/bowenos/hosts does not exist." >&2
+          exit 2
+        fi
+      fi
+      nixos-install --impure --flake "path:/tmp/bowenos#${HOST}"
     else
-      nixos-install --impure --flake "${ROOT}#${TARGET}"
+      echo "Missing /tmp/bowenos/flake.nix. Run ./install/install.sh setup first." >&2
+      exit 2
     fi
     if command -v zpool >/dev/null 2>&1; then
       echo "Exporting rpool before reboot..."
