@@ -69,31 +69,6 @@ set_local_nix_value() {
   mv "${tmp}" "${file}"
 }
 
-set_module_nix_value() {
-  local file="$1"
-  local key="$2"
-  local value="$3"
-  local tmp
-  tmp="$(mktemp)"
-
-  awk -v k="${key}" -v v="${value}" '
-    BEGIN { found = 0; }
-    $0 ~ "^[[:space:]]*" k "[[:space:]]*=" {
-      print "    " k " = " v ";"
-      found = 1
-      next
-    }
-    { print }
-    END {
-      if (!found) {
-        # module is expected to include all keys; no insert fallback
-      }
-    }
-  ' "${file}" > "${tmp}"
-
-  mv "${tmp}" "${file}"
-}
-
 select_disk_by_id() {
   local prompt="$1"
   local -n _choices=$2
@@ -151,9 +126,6 @@ case "${CMD}" in
     mkdir -p "/tmp/bowenos/hosts/${HOSTNAME}"
     cp "${INVENTORY_ROOT}/hosts/example/local.nix" "/tmp/bowenos/hosts/${HOSTNAME}/local.nix"
 
-    # Basic identity defaults inside module
-    set_module_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "bowenos.identity.hostName" "\"${HOSTNAME}\""
-
     # Disk mode
     read -r -p "Disk mode (mirror/single) [mirror]: " DISK_MODE
     DISK_MODE="${DISK_MODE:-mirror}"
@@ -162,7 +134,6 @@ case "${CMD}" in
       exit 2
     fi
     set_local_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "diskMode" "\"${DISK_MODE}\""
-    set_module_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "bowenos.storage.diskMode" "\"${DISK_MODE}\""
 
     # Boot mode
     read -r -p "Boot mode (uefi/bios) [uefi]: " BOOT_MODE
@@ -172,35 +143,34 @@ case "${CMD}" in
       exit 2
     fi
     set_local_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "bootMode" "\"${BOOT_MODE}\""
-    set_module_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "bowenos.storage.bootMode" "\"${BOOT_MODE}\""
 
     # Admin user + SSH key
     read -r -p "Admin username [admin]: " ADMIN_USER
     ADMIN_USER="${ADMIN_USER:-admin}"
-    set_module_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "bowenos.users.adminUser" "\"${ADMIN_USER}\""
+    set_local_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "adminUser" "\"${ADMIN_USER}\""
 
     # Host identity
     read -r -p "Host ID (8 hex chars) [deadbeef]: " HOST_ID
     HOST_ID="${HOST_ID:-deadbeef}"
-    set_module_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "bowenos.identity.hostId" "\"${HOST_ID}\""
+    set_local_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "hostId" "\"${HOST_ID}\""
 
     read -r -p "Timezone [America/Vancouver]: " TIMEZONE
     TIMEZONE="${TIMEZONE:-America/Vancouver}"
-    set_module_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "bowenos.identity.timeZone" "\"${TIMEZONE}\""
+    set_local_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "timeZone" "\"${TIMEZONE}\""
 
     read -r -p "Locale [en_CA.UTF-8]: " LOCALE
     LOCALE="${LOCALE:-en_CA.UTF-8}"
-    set_module_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "bowenos.identity.locale" "\"${LOCALE}\""
+    set_local_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "locale" "\"${LOCALE}\""
 
     read -r -p "SSH public key: " SSH_KEY
     if [[ -z "${SSH_KEY}" ]]; then
       echo "SSH public key is required." >&2
       exit 2
     fi
-    set_module_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "bowenos.users.sshPubKey" "\"${SSH_KEY}\""
-    set_module_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "bowenos.users.allowNoKey" "false"
-    set_module_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "bowenos.users.sudoNeedsPassword" "false"
-    set_module_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "bowenos.users.mutableUsers" "false"
+    set_local_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "sshPubKey" "\"${SSH_KEY}\""
+    set_local_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "allowNoKey" "false"
+    set_local_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "sudoNeedsPassword" "false"
+    set_local_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "mutableUsers" "false"
 
     # Disk selection menu
     mapfile -t disks < <(ls -1 /dev/disk/by-id | grep -v -- '-part' | sort -u)
@@ -216,13 +186,10 @@ case "${CMD}" in
     fi
 
     set_local_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "bootaById" "\"${selected[0]}\""
-    set_module_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "bowenos.storage.bootaById" "\"${selected[0]}\""
     if [[ "${DISK_MODE}" == "mirror" ]]; then
       set_local_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "bootbById" "\"${selected[1]}\""
-      set_module_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "bowenos.storage.bootbById" "\"${selected[1]}\""
     else
       set_local_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "bootbById" "\"\""
-      set_module_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "bowenos.storage.bootbById" "\"\""
     fi
 
     # Hardware scan

@@ -8,7 +8,7 @@ hosts/<hostname>/
   hardware-configuration.nix
 ```
 
-`local.nix` must export an attrset with a `module`:
+`local.nix` must export:
 
 ```nix
 {
@@ -19,33 +19,23 @@ hosts/<hostname>/
   bootaById = "nvme-EXAMPLE_DISK_A";
   bootbById = "nvme-EXAMPLE_DISK_B";
 
-  module = { ... }: {
-    bowenos.identity = {
-      hostName = "spruce";           # optional (defaults to dir name)
-      hostId = "deadbeef";
-      timeZone = "America/Vancouver";
-      locale = "en_CA.UTF-8";
-      target = "computeplusstorage";
-    };
+  # Short-form keys (expanded to bowenos.*)
+  hostName = "spruce";           # optional (defaults to dir name)
+  hostId = "deadbeef";
+  timeZone = "America/Vancouver";
+  locale = "en_CA.UTF-8";
 
-    bowenos.users = {
-      adminUser = "leonard";
-      sshPubKey = "ssh-ed25519 AAAA... your@key";
-      allowNoKey = false;
-      sudoNeedsPassword = false;
-      mutableUsers = false;
-      consolePassword = "";
-    };
+  adminUser = "leonard";
+  sshPubKey = "ssh-ed25519 AAAA... your@key";
+  allowNoKey = false;
+  sudoNeedsPassword = false;
+  mutableUsers = false;
+  consolePassword = "";
 
-    bowenos.storage = {
-      diskMode = "mirror";
-      bootMode = "uefi";
-      isVm = false;
-      bootbDiskPath = "/dev/disk/by-id/EXAMPLE_DISK_B";
-      bootaById = "nvme-EXAMPLE_DISK_A";
-      bootbById = "nvme-EXAMPLE_DISK_B";
-    };
-  };
+  diskMode = "mirror";
+  bootMode = "uefi";
+  isVm = false;
+  bootbDiskPath = "/dev/disk/by-id/EXAMPLE_DISK_B";
 }
 ```
 
