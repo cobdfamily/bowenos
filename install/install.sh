@@ -212,6 +212,9 @@ case "${CMD}" in
     echo "Inventory written to /tmp/bowenos/hosts/${HOSTNAME}"
     ;;
   disko)
+    if [[ -d /tmp/bowenos ]]; then
+      INVENTORY_ROOT="/tmp/bowenos"
+    fi
     if [[ -n "${HOST}" ]]; then
       TARGET="$(nix eval --raw "${INVENTORY_ROOT}#hostInfo.${HOST}.target")"
       HARDWARE_FILE="${INVENTORY_ROOT}/hosts/${HOST}/hardware-configuration.nix"
