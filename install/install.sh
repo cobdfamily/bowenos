@@ -172,7 +172,7 @@ case "${CMD}" in
     set_local_nix_value "/tmp/bowenos/hosts/${HOSTNAME}/local.nix" "diskMode" "\"${DISK_MODE}\""
 
     # Disk selection menu
-    mapfile -t disks < <(ls -1 /dev/disk/by-id | grep -vE '-part' | sort -u)
+    mapfile -t disks < <(ls -1 /dev/disk/by-id | grep -v -- '-part' | sort -u)
     if [[ ${#disks[@]} -eq 0 ]]; then
       echo "No disks found in /dev/disk/by-id." >&2
       exit 2
