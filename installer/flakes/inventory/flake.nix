@@ -71,8 +71,8 @@
           modules = [
             disko.nixosModules.disko
             impermanence.nixosModules.impermanence
-            bowenos.outPath + "/targets/${target}/disks.nix"
-            bowenos.outPath + "/targets/${target}/default.nix"
+            "${bowenos.outPath}/targets/${target}/disks.nix"
+            "${bowenos.outPath}/targets/${target}/default.nix"
             identityDefaults
             shortModule
             hostModule
