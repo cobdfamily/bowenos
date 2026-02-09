@@ -79,6 +79,8 @@ case "${CMD}" in
     fi
     ;;
   install)
+    echo "After install, you can export the pool before reboot:"
+    echo "  zpool export rpool"
     nixos-install --impure --flake "${ROOT}#${TARGET}"
     ;;
   switch)
