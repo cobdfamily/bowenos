@@ -7,8 +7,7 @@ in
   imports =
     [
       ./options.nix
-    ]
-    ++ (lib.optional (builtins.pathExists ../local.nix) ../local.nix);
+    ];
 
   assertions = [
     { assertion = hostId != ""; message = "HOSTID is required (8 hex chars)."; }
