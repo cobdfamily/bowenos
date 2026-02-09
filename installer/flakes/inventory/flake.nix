@@ -74,11 +74,11 @@
             ]
             ++ (if builtins.pathExists hw then [ hw ] else [ ])
             ++ [
-              "${bowenos.outPath}/targets/${target}/disks.nix"
-              "${bowenos.outPath}/targets/${target}/default.nix"
               identityDefaults
               shortModule
               hostModule
+              "${bowenos.outPath}/targets/${target}/disks.nix"
+              "${bowenos.outPath}/targets/${target}/default.nix"
             ];
         };
     in {
