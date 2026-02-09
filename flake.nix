@@ -11,40 +11,81 @@
   };
 
   outputs = { self, nixpkgs, disko, impermanence, installer, ... }:
-    let system = "x86_64-linux";
+    let
+      defaultSystem = "x86_64-linux";
+
+      hostDirs =
+        let
+          entries = builtins.readDir ./hosts;
+        in
+        builtins.filter (n: entries.${n} == "directory") (builtins.attrNames entries);
+
+      hostInfo =
+        builtins.listToAttrs (map
+          (name:
+            let host = import (./hosts + "/${name}/host.nix");
+            in { name = name; value = { target = host.target; system = host.system or defaultSystem; }; })
+          hostDirs);
+
+      mkHost =
+        name:
+        let
+          host = import (./hosts + "/${name}/host.nix");
+          system = host.system or defaultSystem;
+          target = host.target;
+          hostModule = host.module or (throw "hosts/${name}/host.nix must export { target, module }");
+          hw = ./hosts + "/${name}/hardware-configuration.nix";
+          local = ./hosts + "/${name}/local.nix";
+        in
+        nixpkgs.lib.nixosSystem {
+          inherit system;
+          modules = [
+            disko.nixosModules.disko
+            impermanence.nixosModules.impermanence
+            ./targets/${target}/disks.nix
+            ./targets/${target}/default.nix
+            hostModule
+          ]
+          ++ (if builtins.pathExists hw then [ hw ] else [ ])
+          ++ (if builtins.pathExists local then [ local ] else [ ]);
+        };
     in {
-      packages.${system}.iso = installer.packages.${system}.iso;
+      packages.${defaultSystem}.iso = installer.packages.${defaultSystem}.iso;
 
-      nixosConfigurations = {
-        compute = nixpkgs.lib.nixosSystem {
-          inherit system;
-          modules = [
-            disko.nixosModules.disko
-            impermanence.nixosModules.impermanence
-            ./targets/compute/disks.nix
-            ./targets/compute/default.nix
-          ];
-        };
+      hostInfo = hostInfo;
 
-        computeplusstorage = nixpkgs.lib.nixosSystem {
-          inherit system;
-          modules = [
-            disko.nixosModules.disko
-            impermanence.nixosModules.impermanence
-            ./targets/computeplusstorage/disks.nix
-            ./targets/computeplusstorage/default.nix
-          ];
-        };
+      nixosConfigurations =
+        builtins.listToAttrs (map (name: { name = name; value = mkHost name; }) hostDirs)
+        // {
+          compute = nixpkgs.lib.nixosSystem {
+            system = defaultSystem;
+            modules = [
+              disko.nixosModules.disko
+              impermanence.nixosModules.impermanence
+              ./targets/compute/disks.nix
+              ./targets/compute/default.nix
+            ];
+          };
 
-        storage = nixpkgs.lib.nixosSystem {
-          inherit system;
-          modules = [
-            disko.nixosModules.disko
-            impermanence.nixosModules.impermanence
-            ./targets/storage/disks.nix
-            ./targets/storage/default.nix
-          ];
+          computeplusstorage = nixpkgs.lib.nixosSystem {
+            system = defaultSystem;
+            modules = [
+              disko.nixosModules.disko
+              impermanence.nixosModules.impermanence
+              ./targets/computeplusstorage/disks.nix
+              ./targets/computeplusstorage/default.nix
+            ];
+          };
+
+          storage = nixpkgs.lib.nixosSystem {
+            system = defaultSystem;
+            modules = [
+              disko.nixosModules.disko
+              impermanence.nixosModules.impermanence
+              ./targets/storage/disks.nix
+              ./targets/storage/default.nix
+            ];
+          };
         };
-      };
     };
 }

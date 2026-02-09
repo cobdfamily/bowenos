@@ -3,6 +3,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENV_FILE="${ROOT}/.env"
+HOST="${HOST:-}"
 HARDWARE_FILE="${ROOT}/hardware-configuration.nix"
 
 if [[ -f "${ENV_FILE}" ]]; then
@@ -49,6 +50,7 @@ validate_hardware() {
 
 case "${CMD}" in
   show-env)
+    echo "HOST=${HOST:-}"
     echo "TARGET=${TARGET}"
     echo "TARGET(from env)=${TARGET}"
     echo "HOSTNAME=${HOSTNAME:-}"
@@ -72,6 +74,10 @@ case "${CMD}" in
     if [[ -z "${BOOTA_BYID:-}" || -z "${BOOTB_BYID:-}" ]]; then
       echo "Set BOOTA_BYID and BOOTB_BYID in .env or env." >&2
       exit 2
+    fi
+    if [[ -n "${HOST}" ]]; then
+      TARGET="$(nix eval --raw "${ROOT}#hostInfo.${HOST}.target")"
+      HARDWARE_FILE="${ROOT}/hosts/${HOST}/hardware-configuration.nix"
     fi
     if [[ "${FORCE:-0}" != "1" ]]; then
       echo "⚠️  About to WIPE and repartition:"
@@ -98,22 +104,37 @@ case "${CMD}" in
     fi
     ;;
   install)
+    if [[ -n "${HOST}" ]]; then
+      HARDWARE_FILE="${ROOT}/hosts/${HOST}/hardware-configuration.nix"
+    fi
     validate_hardware
     export BOWENOS_HARDWARE_CONFIG="${HARDWARE_FILE}"
-    nixos-install --impure --flake "${ROOT}#${TARGET}"
+    if [[ -n "${HOST}" ]]; then
+      nixos-install --impure --flake "${ROOT}#${HOST}"
+    else
+      nixos-install --impure --flake "${ROOT}#${TARGET}"
+    fi
     if command -v zpool >/dev/null 2>&1; then
       echo "Exporting rpool before reboot..."
       zpool export rpool || true
     fi
     ;;
   switch)
+    if [[ -n "${HOST}" ]]; then
+      HARDWARE_FILE="${ROOT}/hosts/${HOST}/hardware-configuration.nix"
+    fi
     validate_hardware
     export BOWENOS_HARDWARE_CONFIG="${HARDWARE_FILE}"
     if [[ -f /etc/nixos/hardware-configuration.nix ]]; then
       export BOWENOS_HARDWARE_CONFIG="/etc/nixos/hardware-configuration.nix"
     fi
-    sudo env BOWENOS_HARDWARE_CONFIG="${BOWENOS_HARDWARE_CONFIG}" \
-      nixos-rebuild switch --impure --flake "${ROOT}#${TARGET}"
+    if [[ -n "${HOST}" ]]; then
+      sudo env BOWENOS_HARDWARE_CONFIG="${BOWENOS_HARDWARE_CONFIG}" \
+        nixos-rebuild switch --impure --flake "${ROOT}#${HOST}"
+    else
+      sudo env BOWENOS_HARDWARE_CONFIG="${BOWENOS_HARDWARE_CONFIG}" \
+        nixos-rebuild switch --impure --flake "${ROOT}#${TARGET}"
+    fi
     ;;
   iscsi-check)
     fail=0
@@ -140,8 +161,15 @@ case "${CMD}" in
     rm -rf /tmp/hardware
     mkdir -p /tmp/hardware
     nixos-generate-config --root /tmp/hardware
-    cp /tmp/hardware/etc/nixos/hardware-configuration.nix "${ROOT}/hardware-configuration.nix"
-    echo "Wrote ${ROOT}/hardware-configuration.nix"
+    if [[ -n "${HOST}" ]]; then
+      mkdir -p "${ROOT}/hosts/${HOST}"
+      cp /tmp/hardware/etc/nixos/hardware-configuration.nix "${ROOT}/hosts/${HOST}/hardware-configuration.nix"
+      HARDWARE_FILE="${ROOT}/hosts/${HOST}/hardware-configuration.nix"
+    else
+      cp /tmp/hardware/etc/nixos/hardware-configuration.nix "${ROOT}/hardware-configuration.nix"
+      HARDWARE_FILE="${ROOT}/hardware-configuration.nix"
+    fi
+    echo "Wrote ${HARDWARE_FILE}"
     validate_hardware
     ;;
   repair)
