@@ -3,6 +3,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENV_FILE="${ROOT}/.env"
+HARDWARE_FILE="${ROOT}/hardware-configuration.nix"
 
 if [[ -f "${ENV_FILE}" ]]; then
   set -a
@@ -27,6 +28,22 @@ Commands:
   iscsi-check  Validate iSCSI backing devices exist
   hardware-scan  Generate hardware-configuration.nix into repo
 USAGE
+}
+
+validate_hardware() {
+  if [[ ! -f "${HARDWARE_FILE}" ]]; then
+    echo "Missing ${HARDWARE_FILE}. Run ./install/install.sh hardware-scan" >&2
+    exit 2
+  fi
+
+  if command -v nix-instantiate >/dev/null 2>&1; then
+    nix-instantiate --parse "${HARDWARE_FILE}" >/dev/null
+  fi
+
+  if ! grep -q "boot.initrd.availableKernelModules" "${HARDWARE_FILE}"; then
+    echo "hardware-configuration.nix is missing boot.initrd.availableKernelModules" >&2
+    exit 2
+  fi
 }
 
 case "${CMD}" in
@@ -80,6 +97,7 @@ case "${CMD}" in
     fi
     ;;
   install)
+    validate_hardware
     nixos-install --impure --flake "${ROOT}#${TARGET}"
     if command -v zpool >/dev/null 2>&1; then
       echo "Exporting rpool before reboot..."
@@ -116,6 +134,7 @@ case "${CMD}" in
     nixos-generate-config --root /tmp/hardware
     cp /tmp/hardware/etc/nixos/hardware-configuration.nix "${ROOT}/hardware-configuration.nix"
     echo "Wrote ${ROOT}/hardware-configuration.nix"
+    validate_hardware
     ;;
   *)
     usage
