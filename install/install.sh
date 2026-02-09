@@ -2,17 +2,9 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-ENV_FILE="${ROOT}/.env"
 HOST="${HOST:-}"
 INVENTORY_ROOT="${ROOT}/installer/flakes/inventory"
 HARDWARE_FILE="${ROOT}/hardware-configuration.nix"
-
-if [[ -f "${ENV_FILE}" ]]; then
-  set -a
-  # shellcheck source=/dev/null
-  source "${ENV_FILE}"
-  set +a
-fi
 
 TARGET="${TARGET:-computeplusstorage}"
 CMD="${1:-}"

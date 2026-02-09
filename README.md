@@ -47,12 +47,11 @@ TARGET=storage ./install/install.sh disko
 TARGET=storage ./install/install.sh install
 ```
 
-You can also set `TARGET=compute`, `TARGET=computeplusstorage`, or `TARGET=storage` in `.env`.
+You can also set `TARGET=compute`, `TARGET=computeplusstorage`, or `TARGET=storage` via `HOST` inventory or your shell.
 
 ## Environment variables (implemented)
 
-These are read during Nix evaluation using `builtins.getEnv`, so commands run with `--impure`.
-You can set them in `.env` (in repo root) or export them in your shell.
+These are read from host inventory `local.nix` files (recommended).
 
 ### Required
 - `BOOTA_BYID` — boot disk A (by-id basename like `nvme-...` or full `/dev/...` path)
@@ -101,13 +100,7 @@ git clone https://github.com/cobdfamily/bowenos /mnt/etc/nixos
 cd /mnt/etc/nixos
 ```
 
-4) Create `.env`:
-```bash
-cp .env.example .env
-nano .env
-```
-
-5) Install:
+4) Install:
 ```bash
 ./install/install.sh install
 reboot
