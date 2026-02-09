@@ -4,7 +4,6 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 HOST="${HOST:-}"
 INVENTORY_ROOT="${ROOT}/installer/flakes/inventory"
-HARDWARE_FILE="${ROOT}/hardware-configuration.nix"
 
 TARGET="${TARGET:-computeplusstorage}"
 CMD="${1:-}"
@@ -24,22 +23,6 @@ Commands:
   hardware-scan  Generate hardware-configuration.nix into repo
   repair        Rebuild installed system mounted at /mnt (via nixos-enter)
 USAGE
-}
-
-validate_hardware() {
-  if [[ ! -f "${HARDWARE_FILE}" ]]; then
-    echo "Missing ${HARDWARE_FILE}. Run ./install/install.sh hardware-scan" >&2
-    exit 2
-  fi
-
-  if command -v nix-instantiate >/dev/null 2>&1; then
-    nix-instantiate --parse "${HARDWARE_FILE}" >/dev/null
-  fi
-
-  if ! grep -q "boot.initrd.availableKernelModules" "${HARDWARE_FILE}"; then
-    echo "hardware-configuration.nix is missing boot.initrd.availableKernelModules" >&2
-    exit 2
-  fi
 }
 
 set_local_nix_value() {
@@ -217,7 +200,6 @@ case "${CMD}" in
     fi
     if [[ -n "${HOST}" ]]; then
       TARGET="$(nix eval --raw "${INVENTORY_ROOT}#hostInfo.${HOST}.target")"
-      HARDWARE_FILE="${INVENTORY_ROOT}/hosts/${HOST}/hardware-configuration.nix"
       if [[ -z "${BOOTA_BYID:-}" ]]; then
         BOOTA_BYID="$(nix eval --raw "${INVENTORY_ROOT}#hosts.${HOST}.bootaById")"
       fi
@@ -255,11 +237,6 @@ case "${CMD}" in
     ;;
   install)
     if [[ -n "${HOST}" ]]; then
-      HARDWARE_FILE="${INVENTORY_ROOT}/hosts/${HOST}/hardware-configuration.nix"
-    fi
-    validate_hardware
-    export BOWENOS_HARDWARE_CONFIG="${HARDWARE_FILE}"
-    if [[ -n "${HOST}" ]]; then
       nixos-install --impure --flake "${INVENTORY_ROOT}#${HOST}"
     else
       nixos-install --impure --flake "${ROOT}#${TARGET}"
@@ -271,19 +248,9 @@ case "${CMD}" in
     ;;
   switch)
     if [[ -n "${HOST}" ]]; then
-      HARDWARE_FILE="${INVENTORY_ROOT}/hosts/${HOST}/hardware-configuration.nix"
-    fi
-    validate_hardware
-    export BOWENOS_HARDWARE_CONFIG="${HARDWARE_FILE}"
-    if [[ -f /etc/nixos/hardware-configuration.nix ]]; then
-      export BOWENOS_HARDWARE_CONFIG="/etc/nixos/hardware-configuration.nix"
-    fi
-    if [[ -n "${HOST}" ]]; then
-      sudo env BOWENOS_HARDWARE_CONFIG="${BOWENOS_HARDWARE_CONFIG}" \
-        nixos-rebuild switch --impure --flake "${INVENTORY_ROOT}#${HOST}"
+      sudo nixos-rebuild switch --impure --flake "${INVENTORY_ROOT}#${HOST}"
     else
-      sudo env BOWENOS_HARDWARE_CONFIG="${BOWENOS_HARDWARE_CONFIG}" \
-        nixos-rebuild switch --impure --flake "${ROOT}#${TARGET}"
+      sudo nixos-rebuild switch --impure --flake "${ROOT}#${TARGET}"
     fi
     ;;
   iscsi-check)
@@ -314,23 +281,18 @@ case "${CMD}" in
     if [[ -n "${HOST}" ]]; then
       mkdir -p "${INVENTORY_ROOT}/hosts/${HOST}"
       cp /tmp/hardware/etc/nixos/hardware-configuration.nix "${INVENTORY_ROOT}/hosts/${HOST}/hardware-configuration.nix"
-      HARDWARE_FILE="${INVENTORY_ROOT}/hosts/${HOST}/hardware-configuration.nix"
+      echo "Wrote ${INVENTORY_ROOT}/hosts/${HOST}/hardware-configuration.nix"
     else
       cp /tmp/hardware/etc/nixos/hardware-configuration.nix "${ROOT}/hardware-configuration.nix"
-      HARDWARE_FILE="${ROOT}/hardware-configuration.nix"
+      echo "Wrote ${ROOT}/hardware-configuration.nix"
     fi
-    echo "Wrote ${HARDWARE_FILE}"
-    validate_hardware
     ;;
   repair)
-    validate_hardware
-    export BOWENOS_HARDWARE_CONFIG="/etc/nixos/hardware-configuration.nix"
     if ! mountpoint -q /mnt; then
       echo "/mnt is not a mountpoint. Mount rpool/root at /mnt first." >&2
       exit 2
     fi
     nixos-enter --root /mnt -- \
-      env BOWENOS_HARDWARE_CONFIG="${BOWENOS_HARDWARE_CONFIG}" \
       nixos-rebuild switch --impure --flake "/etc/nixos#${TARGET}"
     ;;
   *)

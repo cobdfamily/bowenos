@@ -2,23 +2,10 @@
 let
   hostId = config.bowenos.identity.hostId;
   hostIdValid = builtins.match "^[0-9a-fA-F]{8}$" hostId != null;
-  hwFromEnv = builtins.getEnv "BOWENOS_HARDWARE_CONFIG";
-  hwPath =
-    if hwFromEnv != "" && builtins.pathExists hwFromEnv then
-      hwFromEnv
-    else if builtins.pathExists /etc/nixos/hardware-configuration.nix then
-      /etc/nixos/hardware-configuration.nix
-    else if builtins.pathExists ../hardware-configuration.nix then
-      ../hardware-configuration.nix
-    else
-      null;
 in
 {
   imports =
     [
-      (if hwPath != null
-       then hwPath
-       else throw "hardware-configuration.nix is required (run ./install/install.sh hardware-scan)")
       ./options.nix
       ./env.nix
     ]
