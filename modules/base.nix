@@ -5,7 +5,8 @@ let
 in
 {
   imports =
-    [
+    (lib.optional (builtins.pathExists ../hardware-configuration.nix) ../hardware-configuration.nix)
+    ++ [
       ./options.nix
       ./env.nix
     ]
