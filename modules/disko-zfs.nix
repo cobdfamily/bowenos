@@ -27,13 +27,23 @@ let
   espPartition = {
     size = "512M";
     type = "EF00";
-    content = { type = "filesystem"; format = "vfat"; mountpoint = "/boot"; };
+    content = {
+      type = "filesystem";
+      format = "vfat";
+      mountpoint = "/boot";
+      mountOptions = [ "nofail" "x-systemd.device-timeout=1s" ];
+    };
   };
 
   espMirrorPartition = {
     size = "512M";
     type = "EF00";
-    content = { type = "filesystem"; format = "vfat"; mountpoint = "/boot-fallback"; };
+    content = {
+      type = "filesystem";
+      format = "vfat";
+      mountpoint = "/boot-fallback";
+      mountOptions = [ "nofail" "x-systemd.device-timeout=1s" ];
+    };
   };
 
   biosBootPartition = {

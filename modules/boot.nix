@@ -45,6 +45,7 @@ in
         { devices = [ "nodev" ]; path = "/boot"; }
         { devices = [ "nodev" ]; path = "/boot-fallback"; }
       ];
+      fileSystems."/boot".options = [ "nofail" "x-systemd.device-timeout=1s" ];
       fileSystems."/boot-fallback".options = [ "nofail" "x-systemd.device-timeout=1s" ];
     })
     (lib.mkIf (!useEfi) {
