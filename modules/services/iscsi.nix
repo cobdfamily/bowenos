@@ -29,8 +29,9 @@ in
 
     systemd.services.iscsi-targets-apply = {
       description = "Apply iSCSI targets from modules/services/iscsi/targets/*.nix";
-      after = [ "network-online.target" "local-fs.target" ];
-      wants = [ "network-online.target" ];
+      after = [ "network-online.target" "local-fs.target" "target.service" ];
+      requires = [ "target.service" ];
+      wants = [ "network-online.target" "target.service" ];
       wantedBy = [ "multi-user.target" ];
       serviceConfig = { Type = "oneshot"; RemainAfterExit = true; };
       script = ''
