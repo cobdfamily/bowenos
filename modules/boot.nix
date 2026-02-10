@@ -55,7 +55,7 @@ in
         esac
 
         tries=3
-        new="${base}+${tries}.conf"
+        new="''${base}+${tries}.conf"
         ${pkgs.coreutils}/bin/mv "$entries_dir/$default_entry" "$entries_dir/$new"
         ${pkgs.gnused}/bin/sed -i "s/^default .*/default ${new}/" /boot/loader/loader.conf
       '';
