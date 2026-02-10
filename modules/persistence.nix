@@ -1,4 +1,4 @@
-{ ... }:
+{ lib, pkgs, ... }:
 {
   fileSystems."/persist".neededForBoot = true;
   boot.tmp.useTmpfs = true;
@@ -26,4 +26,12 @@
       "/var/lib/dbus/machine-id"
     ];
   };
+
+  systemd.services."persist-persist-etc-hostid".serviceConfig.ExecStartPre =
+    lib.mkBefore (pkgs.writeShellScript "persist-hostid-cleanup" ''
+      set -eu
+      if ${pkgs.coreutils}/bin/test -e /etc/hostid; then
+        ${pkgs.coreutils}/bin/rm -f /etc/hostid
+      fi
+    '');
 }
