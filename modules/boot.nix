@@ -47,14 +47,7 @@ in
         set -euo pipefail
         uki_file="${config.system.boot.loader.ukiFile}"
         ${pkgs.coreutils}/bin/mkdir -p /boot/EFI/Linux
-        ${pkgs.systemdUkify}/lib/systemd/ukify build \
-          --output "/boot/EFI/Linux/$uki_file" \
-          --linux "${config.boot.kernelPackages.kernel}/${config.system.boot.loader.kernelFile}" \
-          --initrd "${config.system.build.initialRamdisk}/${config.system.boot.loader.initrdFile}" \
-          --cmdline "init=${config.system.build.toplevel}/init ${toString config.boot.kernelParams}" \
-          --os-release "@${config.system.build.etc}/etc/os-release" \
-          --uname "${config.boot.kernelPackages.kernel.modDirVersion}" \
-          --stub "${pkgs.systemd}/lib/systemd/boot/efi/linux${efiArch}.efi.stub"
+        ${pkgs.coreutils}/bin/cp -f "${config.system.build.uki}/${config.system.boot.loader.ukiFile}" "/boot/EFI/Linux/$uki_file"
         ${pkgs.gnused}/bin/sed -i "s/^default .*/default nixos-uki.conf/" /boot/loader/loader.conf
         ${lib.optionalString useMirror ''
         if ${pkgs.util-linux}/bin/mountpoint -q /boot-fallback; then
