@@ -1,6 +1,5 @@
 { lib, config, pkgs, ... }:
 let
-  efiArch = pkgs.stdenv.hostPlatform.efiArch;
   mkPath = x: if lib.hasPrefix "/dev/" x then x else "/dev/disk/by-id/" + x;
 
   boota = lib.attrByPath [ "bowenos" "storage" "bootaById" ] "" config;
@@ -15,6 +14,8 @@ let
   useEfi = bootMode == "uefi";
 in
 {
+  imports = [ ./boot-uki.nix ];
+
   config = lib.mkMerge [
     {
       assertions = [
@@ -34,28 +35,8 @@ in
       boot.loader.timeout = 30;            # seconds
       boot.loader.efi.canTouchEfiVariables = true;
       boot.loader.efi.efiSysMountPoint = "/boot";
-      boot.uki.tries = 3;
       fileSystems."/boot".options = [ "nofail" "x-systemd.device-timeout=1s" ];
       fileSystems."/boot-fallback".options = [ "nofail" "x-systemd.device-timeout=1s" ];
-      boot.loader.systemd-boot.extraEntries = {
-        "nixos-uki.conf" = ''
-          title NixOS (UKI)
-          efi /EFI/Linux/${config.system.boot.loader.ukiFile}
-        '';
-      };
-      system.activationScripts."systemd-boot-uki".text = ''
-        set -euo pipefail
-        uki_file="${config.system.boot.loader.ukiFile}"
-        ${pkgs.coreutils}/bin/mkdir -p /boot/EFI/Linux
-        ${pkgs.coreutils}/bin/cp -f "${config.system.build.uki}/${config.system.boot.loader.ukiFile}" "/boot/EFI/Linux/$uki_file"
-        ${pkgs.gnused}/bin/sed -i "s/^default .*/default nixos-uki.conf/" /boot/loader/loader.conf
-        ${lib.optionalString useMirror ''
-        if ${pkgs.util-linux}/bin/mountpoint -q /boot-fallback; then
-          ${pkgs.coreutils}/bin/mkdir -p /boot-fallback/EFI/Linux
-          ${pkgs.coreutils}/bin/cp -f "/boot/EFI/Linux/$uki_file" "/boot-fallback/EFI/Linux/$uki_file"
-        fi
-        ''}
-      '';
       system.activationScripts."systemd-boot-mirror".text = ''
         if ${pkgs.util-linux}/bin/mountpoint -q /boot-fallback; then
           ${pkgs.coreutils}/bin/rm -rf /boot-fallback/EFI /boot-fallback/loader
