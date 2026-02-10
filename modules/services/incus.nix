@@ -29,38 +29,38 @@ in {
       serviceConfig = { Type = "oneshot"; RemainAfterExit = true; };
       script = ''
         set -euo pipefail
-        if incus info >/dev/null 2>&1; then echo "Incus already initialized."; else incus admin init --minimal; fi
+        if ${pkgs.incus}/bin/incus info >/dev/null 2>&1; then echo "Incus already initialized."; else ${pkgs.incus}/bin/incus admin init --minimal; fi
 
         if ! zfs list -H -o name "${cfg.zfsSource}" >/dev/null 2>&1; then
           zfs create -p "${cfg.zfsSource}"
         fi
 
-        if ! incus storage list --format json | jq -e '.[] | select(.name=="${cfg.storagePoolName}")' >/dev/null; then
-          incus storage create "${cfg.storagePoolName}" zfs source="${cfg.zfsSource}"
+        if ! ${pkgs.incus}/bin/incus storage list --format json | jq -e '.[] | select(.name=="${cfg.storagePoolName}")' >/dev/null; then
+          ${pkgs.incus}/bin/incus storage create "${cfg.storagePoolName}" zfs source="${cfg.zfsSource}"
         fi
 
-        if ! incus profile show "${cfg.defaultProfile}" | grep -q '^  root:'; then
-          incus profile device add "${cfg.defaultProfile}" root disk path=/ pool="${cfg.storagePoolName}"
+        if ! ${pkgs.incus}/bin/incus profile show "${cfg.defaultProfile}" | grep -q '^  root:'; then
+          ${pkgs.incus}/bin/incus profile device add "${cfg.defaultProfile}" root disk path=/ pool="${cfg.storagePoolName}"
         fi
 
         if ${lib.boolToString cfg.createDefaultNetwork}; then
-          if ! incus network list --format json | jq -e '.[] | select(.name=="incusbr0")' >/dev/null; then
-            incus network create incusbr0 ipv4.address=auto ipv4.nat=true ipv6.address=none
+          if ! ${pkgs.incus}/bin/incus network list --format json | jq -e '.[] | select(.name=="incusbr0")' >/dev/null; then
+            ${pkgs.incus}/bin/incus network create incusbr0 ipv4.address=auto ipv4.nat=true ipv6.address=none
           fi
-          if ! incus profile show "${cfg.defaultProfile}" | grep -q '^  eth0:'; then
-            incus profile device add "${cfg.defaultProfile}" eth0 nic nictype=bridged parent=incusbr0
+          if ! ${pkgs.incus}/bin/incus profile show "${cfg.defaultProfile}" | grep -q '^  eth0:'; then
+            ${pkgs.incus}/bin/incus profile device add "${cfg.defaultProfile}" eth0 nic nictype=bridged parent=incusbr0
           fi
         fi
 
         if ${lib.boolToString cfg.createLanProfile}; then
-          if ! incus profile list --format json | jq -e '.[] | select(.name=="${cfg.lanProfileName}")' >/dev/null; then
-            incus profile create "${cfg.lanProfileName}"
+          if ! ${pkgs.incus}/bin/incus profile list --format json | jq -e '.[] | select(.name=="${cfg.lanProfileName}")' >/dev/null; then
+            ${pkgs.incus}/bin/incus profile create "${cfg.lanProfileName}"
           fi
-          if ! incus profile show "${cfg.lanProfileName}" | grep -q '^  root:'; then
-            incus profile device add "${cfg.lanProfileName}" root disk path=/ pool="${cfg.storagePoolName}"
+          if ! ${pkgs.incus}/bin/incus profile show "${cfg.lanProfileName}" | grep -q '^  root:'; then
+            ${pkgs.incus}/bin/incus profile device add "${cfg.lanProfileName}" root disk path=/ pool="${cfg.storagePoolName}"
           fi
-          if ! incus profile show "${cfg.lanProfileName}" | grep -q '^  eth0:'; then
-            incus profile device add "${cfg.lanProfileName}" eth0 nic nictype=bridged parent="${cfg.lanBridgeParent}"
+          if ! ${pkgs.incus}/bin/incus profile show "${cfg.lanProfileName}" | grep -q '^  eth0:'; then
+            ${pkgs.incus}/bin/incus profile device add "${cfg.lanProfileName}" eth0 nic nictype=bridged parent="${cfg.lanBridgeParent}"
           fi
         fi
       '';

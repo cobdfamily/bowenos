@@ -7,13 +7,13 @@ let
   targets = map (name: import (targetsDir + "/${name}")) (builtins.attrNames targetFiles);
 
   mkTargetcli = t: ''
-    targetcli /iscsi create ${t.iqn} || true
+    ${pkgs.targetcli-fb}/bin/targetcli /iscsi create ${t.iqn} || true
     ${lib.concatStringsSep "\n" (map (lun: ''
-      targetcli /backstores/block create ${lun.name} ${lun.backing} || true
-      targetcli /iscsi/${t.iqn}/tpg1/luns create /backstores/block/${lun.name} || true
+      ${pkgs.targetcli-fb}/bin/targetcli /backstores/block create ${lun.name} ${lun.backing} || true
+      ${pkgs.targetcli-fb}/bin/targetcli /iscsi/${t.iqn}/tpg1/luns create /backstores/block/${lun.name} || true
     '') t.luns)}
     ${lib.concatStringsSep "\n" (map (a: ''
-      targetcli /iscsi/${t.iqn}/tpg1/acls create ${a.initiator} || true
+      ${pkgs.targetcli-fb}/bin/targetcli /iscsi/${t.iqn}/tpg1/acls create ${a.initiator} || true
     '') (t.acls or []))}
   '';
 in
@@ -37,7 +37,7 @@ in
       script = ''
         set -euo pipefail
         ${lib.concatStringsSep "\n\n" (map mkTargetcli targets)}
-        targetcli saveconfig
+        ${pkgs.targetcli-fb}/bin/targetcli saveconfig
       '';
     };
   };
