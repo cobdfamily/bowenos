@@ -38,7 +38,7 @@ in
       boot.loader.grub.zfsSupport = true;
       boot.loader.grub.devices = [ "nodev" ];
       boot.loader.grub.timeoutStyle = "menu";  # ALWAYS show menu
-      boot.loadertimeout = 30;            # seconds
+      boot.loader.timeout = 30;            # seconds
       boot.loader.efi.canTouchEfiVariables = true;
       boot.loader.efi.efiSysMountPoint = "/boot";
       boot.loader.grub.mirroredBoots = [
