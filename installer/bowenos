@@ -251,8 +251,7 @@ case "${CMD}" in
       BOOTB_BYID="$(nix eval --raw "path:${INVENTORY_ROOT}#hosts.${HOST}.bootbById")"
       DISK_MODE="$(nix eval --raw "path:${INVENTORY_ROOT}#hostInfo.${HOST}.diskMode")"
       BOOT_MODE="$(nix eval --raw "path:${INVENTORY_ROOT}#hostInfo.${HOST}.bootMode")"
-      DISK_PATH="${ROOT/targets/${TARGET}/disks.nix"
-      echo "${DISK_PATH}"
+      DISK_PATH="${ROOT}/targets/${TARGET}/disks.nix"
 
     fi
     export BOOTA_BYID BOOTB_BYID DISK_MODE BOOT_MODE
