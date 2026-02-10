@@ -8,6 +8,20 @@ INVENTORY_ROOT="${ROOT}/installer/flakes/inventory"
 TARGET="${TARGET:-computeplusstorage}"
 CMD="${1:-}"
 
+COREUTILS_ROOT="$(nix eval --raw --impure 'with import <nixpkgs> {}; pkgs.coreutils' 2>/dev/null || true)"
+if [[ -n "${COREUTILS_ROOT}" ]]; then
+  COREUTILS_BIN="${COREUTILS_ROOT}/bin"
+  MKDIR="${COREUTILS_BIN}/mkdir"
+  CP="${COREUTILS_BIN}/cp"
+  RM="${COREUTILS_BIN}/rm"
+  TEST="${COREUTILS_BIN}/test"
+else
+  MKDIR="mkdir"
+  CP="cp"
+  RM="rm"
+  TEST="test"
+fi
+
 usage() {
   cat <<'USAGE'
 Usage: install.sh <command>
@@ -149,18 +163,18 @@ case "${CMD}" in
       exit 2
     fi
 
-    rm -rf /tmp/bowenos
-    mkdir -p /tmp/bowenos
+    ${RM} -rf /tmp/bowenos
+    ${MKDIR} -p /tmp/bowenos
 
     # Copy inventory flake
-    cp "${INVENTORY_ROOT}/flake.nix" /tmp/bowenos/flake.nix
+    ${CP} "${INVENTORY_ROOT}/flake.nix" /tmp/bowenos/flake.nix
     if [[ -f "${INVENTORY_ROOT}/flake.lock" ]]; then
-      cp "${INVENTORY_ROOT}/flake.lock" /tmp/bowenos/flake.lock
+      ${CP} "${INVENTORY_ROOT}/flake.lock" /tmp/bowenos/flake.lock
     fi
 
     # Copy example host
-    mkdir -p "/tmp/bowenos/hosts/${HOSTNAME}"
-    cp "${INVENTORY_ROOT}/hosts/example/local.nix" "/tmp/bowenos/hosts/${HOSTNAME}/local.nix"
+    ${MKDIR} -p "/tmp/bowenos/hosts/${HOSTNAME}"
+    ${CP} "${INVENTORY_ROOT}/hosts/example/local.nix" "/tmp/bowenos/hosts/${HOSTNAME}/local.nix"
 
     # Disk mode
     read -r -p "Disk mode (mirror/single) [mirror]: " DISK_MODE
@@ -229,10 +243,10 @@ case "${CMD}" in
     fi
 
     # Hardware scan
-    rm -rf /tmp/hardware
-    mkdir -p /tmp/hardware
+    ${RM} -rf /tmp/hardware
+    ${MKDIR} -p /tmp/hardware
     nixos-generate-config --root /tmp/hardware
-    cp /tmp/hardware/etc/nixos/hardware-configuration.nix "/tmp/bowenos/hosts/${HOSTNAME}/hardware-configuration.nix"
+    ${CP} /tmp/hardware/etc/nixos/hardware-configuration.nix "/tmp/bowenos/hosts/${HOSTNAME}/hardware-configuration.nix"
 
     echo "Inventory written to /tmp/bowenos/hosts/${HOSTNAME}"
     ;;
@@ -286,7 +300,15 @@ case "${CMD}" in
   install)
     if [[ -f /tmp/bowenos/flake.nix ]]; then
       select_host_if_needed
-      nixos-install --impure --flake "path:/tmp/bowenos#${HOST}"
+      if [[ -d /tmp/bowenos ]]; then
+        ${MKDIR} -p /mnt/persist/etc/bowenos
+        ${CP} -a /tmp/bowenos/. /mnt/persist/etc/bowenos/
+      fi
+      extra_flags=()
+      if [[ -d /tmp/installer ]]; then
+        extra_flags+=(--override-input bowenos "path:/tmp/installer")
+      fi
+      nixos-install --impure --flake "path:/tmp/bowenos#${HOST}" "${extra_flags[@]}"
     else
       echo "Missing /tmp/bowenos/flake.nix. Run ./installer/bowenos setup first." >&2
       exit 2
@@ -295,7 +317,11 @@ case "${CMD}" in
   switch)
     if [[ -f /tmp/bowenos/flake.nix ]]; then
       select_host_if_needed
-      sudo nixos-rebuild switch --impure --flake "path:/tmp/bowenos#${HOST}"
+      extra_flags=()
+      if [[ -d /tmp/installer ]]; then
+        extra_flags+=(--override-input bowenos "path:/tmp/installer")
+      fi
+      sudo nixos-rebuild switch --impure --flake "path:/tmp/bowenos#${HOST}" "${extra_flags[@]}"
     else
       echo "Missing /tmp/bowenos"
       exit 1
@@ -323,15 +349,15 @@ case "${CMD}" in
     exit ${fail}
     ;;
   hardware-scan)
-    rm -rf /tmp/hardware
-    mkdir -p /tmp/hardware
+    ${RM} -rf /tmp/hardware
+    ${MKDIR} -p /tmp/hardware
     nixos-generate-config --root /tmp/hardware
     if [[ -n "${HOST}" ]]; then
-      mkdir -p "${INVENTORY_ROOT}/hosts/${HOST}"
-      cp /tmp/hardware/etc/nixos/hardware-configuration.nix "${INVENTORY_ROOT}/hosts/${HOST}/hardware-configuration.nix"
+      ${MKDIR} -p "${INVENTORY_ROOT}/hosts/${HOST}"
+      ${CP} /tmp/hardware/etc/nixos/hardware-configuration.nix "${INVENTORY_ROOT}/hosts/${HOST}/hardware-configuration.nix"
       echo "Wrote ${INVENTORY_ROOT}/hosts/${HOST}/hardware-configuration.nix"
     else
-      cp /tmp/hardware/etc/nixos/hardware-configuration.nix "${ROOT}/hardware-configuration.nix"
+      ${CP} /tmp/hardware/etc/nixos/hardware-configuration.nix "${ROOT}/hardware-configuration.nix"
       echo "Wrote ${ROOT}/hardware-configuration.nix"
     fi
     ;;
