@@ -31,20 +31,20 @@ All targets include:
 
 ### Install compute
 ```bash
-TARGET=compute ./install/install.sh disko
-TARGET=compute ./install/install.sh install
+TARGET=compute ./installer/bowenos disko
+TARGET=compute ./installer/bowenos install
 ```
 
 ### Install computeplusstorage (default)
 ```bash
-./install/install.sh disko
-./install/install.sh install
+./installer/bowenos disko
+./installer/bowenos install
 ```
 
 ### Install storage
 ```bash
-TARGET=storage ./install/install.sh disko
-TARGET=storage ./install/install.sh install
+TARGET=storage ./installer/bowenos disko
+TARGET=storage ./installer/bowenos install
 ```
 
 You can set the target via host inventory or by exporting `TARGET` for ad‑hoc runs.
@@ -75,10 +75,10 @@ cd /root/bowenos
 
 2) Partition + create mirrored rpool (WIPES boot disks):
 ```bash
-./install/install.sh disko
+./installer/bowenos disko
 ```
 
-It will prompt `y/N` before wiping. Use `FORCE=1 ./install/install.sh disko` to skip prompting.
+It will prompt `y/N` before wiping. Use `FORCE=1 ./installer/bowenos disko` to skip prompting.
 
 3) Clone the repo into `/mnt/etc/nixos`:
 ```bash
@@ -89,14 +89,14 @@ cd /mnt/etc/nixos
 
 4) Install:
 ```bash
-./install/install.sh install
+./installer/bowenos install
 reboot
 ```
 
 ## After boot
 ```bash
 cd /etc/nixos
-./install/install.sh switch
+./installer/bowenos switch
 ```
 
 ## NFS (computeplusstorage/storage only)
@@ -111,10 +111,10 @@ You create zvols manually (e.g. `tank/vmstore`) and reference them as `/dev/zvol
 
 Check backing devices exist:
 ```bash
-./install/install.sh iscsi-check
+./installer/bowenos iscsi-check
 ```
 
 Apply changes:
 ```bash
-./install/install.sh switch
+./installer/bowenos switch
 ```

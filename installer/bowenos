@@ -283,7 +283,7 @@ case "${CMD}" in
       select_host_if_needed
       nixos-install --impure --flake "path:/tmp/bowenos#${HOST}"
     else
-      echo "Missing /tmp/bowenos/flake.nix. Run ./install/install.sh setup first." >&2
+      echo "Missing /tmp/bowenos/flake.nix. Run ./installer/bowenos setup first." >&2
       exit 2
     fi
     if command -v zpool >/dev/null 2>&1; then
