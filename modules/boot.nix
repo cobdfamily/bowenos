@@ -35,6 +35,30 @@ in
       boot.loader.efi.efiSysMountPoint = "/boot";
       fileSystems."/boot".options = [ "nofail" "x-systemd.device-timeout=1s" ];
       fileSystems."/boot-fallback".options = [ "nofail" "x-systemd.device-timeout=1s" ];
+      # Enable systemd-boot "boot counting" for auto-rollback by renaming the
+      # default entry to include +N tries (Boot Loader Spec).
+      boot.loader.systemd-boot.extraInstallCommands = ''
+        set -euo pipefail
+        entries_dir=/boot/loader/entries
+        if [ ! -d "$entries_dir" ] || [ ! -f /boot/loader/loader.conf ]; then
+          exit 0
+        fi
+
+        default_entry="$(${pkgs.gawk}/bin/awk '$1 == "default" { print $2; exit }' /boot/loader/loader.conf || true)"
+        if [ -z "$default_entry" ] || [ ! -f "$entries_dir/$default_entry" ]; then
+          exit 0
+        fi
+
+        base="${default_entry%.conf}"
+        case "$base" in
+          *+*) exit 0 ;;
+        esac
+
+        tries=3
+        new="${base}+${tries}.conf"
+        ${pkgs.coreutils}/bin/mv "$entries_dir/$default_entry" "$entries_dir/$new"
+        ${pkgs.gnused}/bin/sed -i "s/^default .*/default ${new}/" /boot/loader/loader.conf
+      '';
 
       system.activationScripts."systemd-boot-mirror".text = ''
         if ${pkgs.util-linux}/bin/mountpoint -q /boot-fallback; then
