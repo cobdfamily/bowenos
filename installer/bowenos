@@ -249,7 +249,10 @@ case "${CMD}" in
       TARGET="$(nix eval --raw "path:${INVENTORY_ROOT}#hostInfo.${HOST}.target")"
       BOOTA_BYID="$(nix eval --raw "path:${INVENTORY_ROOT}#hosts.${HOST}.bootaById")"
       BOOTB_BYID="$(nix eval --raw "path:${INVENTORY_ROOT}#hosts.${HOST}.bootbById")"
+      DISK_MODE="$(nix eval --raw "path:${INVENTORY_ROOT}#hostInfo.${HOST}.diskMode")"
+      BOOT_MODE="$(nix eval --raw "path:${INVENTORY_ROOT}#hostInfo.${HOST}.bootMode")"
     fi
+    export BOOTA_BYID BOOTB_BYID DISK_MODE BOOT_MODE
     if [[ -z "${BOOTA_BYID:-}" || -z "${BOOTB_BYID:-}" ]]; then
       echo "Set bootaById/bootbById in hosts/${HOST}/local.nix." >&2
       exit 2
@@ -266,7 +269,7 @@ case "${CMD}" in
     fi
     nix --extra-experimental-features "nix-command flakes" run --impure \
       github:nix-community/disko -- \
-      --mode disko "${ROOT}/targets/${TARGET}/disks.nix"
+      --mode disko --flake "path:${INVENTORY_ROOT}#${HOST}"
 
     echo
     echo "Post-disko validation:"
