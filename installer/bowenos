@@ -269,7 +269,7 @@ case "${CMD}" in
     fi
     nix --extra-experimental-features "nix-command flakes" run --impure \
       github:nix-community/disko -- \
-      --mode disko --flake "path:${INVENTORY_ROOT}#${HOST}"
+      --mode disko ${ROOT/targets/${TARGET}/disks.nix
 
     echo
     echo "Post-disko validation:"

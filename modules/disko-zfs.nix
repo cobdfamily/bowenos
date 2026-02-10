@@ -1,7 +1,11 @@
 { lib, config ? {}, ... }:
 let
-  boota = lib.attrByPath [ "bowenos" "storage" "bootaById" ] "" config;
-  bootb = lib.attrByPath [ "bowenos" "storage" "bootbById" ] "" config;
+  get = name: def: let v = builtins.getEnv name; in if v == "" then def else v;
+
+  bootaCfg = lib.attrByPath [ "bowenos" "storage" "bootaById" ] "" config;
+  bootbCfg = lib.attrByPath [ "bowenos" "storage" "bootbById" ] "" config;
+  boota = if bootaCfg != "" then bootaCfg else get "BOOTA_BYID" "";
+  bootb = if bootbCfg != "" then bootbCfg else get "BOOTB_BYID" "";
 
   mkPath = x: if lib.hasPrefix "/dev/" x then x else "/dev/disk/by-id/" + x;
 
@@ -9,11 +13,15 @@ let
   bootbPath = mkPath bootb;
 
   # Disk mode: mirror (default) or single (set by hardware profile)
-  diskMode = lib.attrByPath [ "bowenos" "storage" "diskMode" ] "mirror" config;
+  diskModeCfg = lib.attrByPath [ "bowenos" "storage" "diskMode" ] "" config;
+  diskMode = if diskModeCfg != "" then diskModeCfg else
+    (let v = get "DISK_MODE" ""; in if v == "" then "mirror" else v);
   useMirror = diskMode == "mirror";
 
   # Boot mode: uefi (default) or bios
-  bootMode = lib.attrByPath [ "bowenos" "storage" "bootMode" ] "uefi" config;
+  bootModeCfg = lib.attrByPath [ "bowenos" "storage" "bootMode" ] "" config;
+  bootMode = if bootModeCfg != "" then bootModeCfg else
+    (let v = get "BOOT_MODE" ""; in if v == "" then "uefi" else v);
   useEfi = bootMode == "uefi";
 
   espPartition = {
