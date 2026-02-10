@@ -49,7 +49,7 @@ in
           exit 0
         fi
 
-        base="${default_entry%.conf}"
+        base="''${default_entry%.conf}"
         case "$base" in
           *+*) exit 0 ;;
         esac
