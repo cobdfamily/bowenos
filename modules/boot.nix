@@ -47,6 +47,12 @@ in
         ${pkgs.coreutils}/bin/mkdir -p /boot/EFI/Linux
         ${pkgs.coreutils}/bin/cp -f "${config.system.build.uki}/${config.system.boot.loader.ukiFile}" "/boot/EFI/Linux/${config.system.boot.loader.ukiFile}"
         ${pkgs.gnused}/bin/sed -i "s/^default .*/default nixos-uki.conf/" /boot/loader/loader.conf
+        ${lib.optionalString useMirror ''
+        if ${pkgs.util-linux}/bin/mountpoint -q /boot-fallback; then
+          ${pkgs.coreutils}/bin/mkdir -p /boot-fallback/EFI/Linux
+          ${pkgs.coreutils}/bin/cp -f "${config.system.build.uki}/${config.system.boot.loader.ukiFile}" "/boot-fallback/EFI/Linux/${config.system.boot.loader.ukiFile}"
+        fi
+        ''}
       '';
       system.activationScripts."systemd-boot-mirror".text = ''
         if ${pkgs.util-linux}/bin/mountpoint -q /boot-fallback; then
