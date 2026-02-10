@@ -291,17 +291,14 @@ case "${CMD}" in
       echo "Missing /tmp/bowenos/flake.nix. Run ./installer/bowenos setup first." >&2
       exit 2
     fi
-    if command -v zpool >/dev/null 2>&1; then
-      echo "Exporting rpool before reboot..."
-      zpool export rpool || true
-    fi
     ;;
   switch)
     if [[ -f /tmp/bowenos/flake.nix ]]; then
       select_host_if_needed
       sudo nixos-rebuild switch --impure --flake "path:/tmp/bowenos#${HOST}"
     else
-      sudo nixos-rebuild switch --impure --flake "${ROOT}#${TARGET}"
+      echo "Missing /tmp/bowenos"
+      exit 1
     fi
     ;;
   iscsi-check)
