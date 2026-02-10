@@ -23,7 +23,8 @@ in {
     systemd.services.incus-preseed = {
       description = "Init Incus + storage pool + profiles";
       after = [ "network-online.target" "zfs-mount.service" "incus.service" ];
-      wants = [ "network-online.target" ];
+      requires = [ "incus.service" ];
+      wants = [ "network-online.target" "incus.service" ];
       wantedBy = [ "multi-user.target" ];
       serviceConfig = { Type = "oneshot"; RemainAfterExit = true; };
       script = ''
