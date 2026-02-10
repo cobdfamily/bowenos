@@ -34,4 +34,11 @@
         ${pkgs.coreutils}/bin/rm -f /etc/hostid
       fi
     '');
+
+  # Ensure activation persist-files doesn't fail if hostid already exists.
+  system.activationScripts."persist-files".text = lib.mkBefore ''
+    if ${pkgs.coreutils}/bin/test -e /etc/hostid; then
+      ${pkgs.coreutils}/bin/rm -f /etc/hostid
+    fi
+  '';
 }
