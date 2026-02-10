@@ -7,6 +7,7 @@ in
   imports =
     [
       ./options.nix
+      ./system-emergency.nix
     ];
 
   assertions = [
