@@ -251,6 +251,9 @@ case "${CMD}" in
       BOOTB_BYID="$(nix eval --raw "path:${INVENTORY_ROOT}#hosts.${HOST}.bootbById")"
       DISK_MODE="$(nix eval --raw "path:${INVENTORY_ROOT}#hostInfo.${HOST}.diskMode")"
       BOOT_MODE="$(nix eval --raw "path:${INVENTORY_ROOT}#hostInfo.${HOST}.bootMode")"
+      DISK_PATH="${ROOT/targets/${TARGET}/disks.nix"
+      echo "${DISK_PATH}"
+
     fi
     export BOOTA_BYID BOOTB_BYID DISK_MODE BOOT_MODE
     if [[ -z "${BOOTA_BYID:-}" || -z "${BOOTB_BYID:-}" ]]; then
@@ -269,7 +272,7 @@ case "${CMD}" in
     fi
     nix --extra-experimental-features "nix-command flakes" run --impure \
       github:nix-community/disko -- \
-      --mode disko ${ROOT/targets/${TARGET}/disks.nix
+      --mode disko ${DISK_PATH}
 
     echo
     echo "Post-disko validation:"
