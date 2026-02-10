@@ -315,13 +315,13 @@ case "${CMD}" in
     fi
     ;;
   switch)
-    if [[ -f /tmp/bowenos/flake.nix ]]; then
+    if [[ -f /etc/bowenos/flake.nix ]]; then
       select_host_if_needed
       extra_flags=()
       if [[ -d /tmp/installer ]]; then
         extra_flags+=(--override-input bowenos "path:/tmp/installer")
       fi
-      sudo nixos-rebuild switch --impure --flake "path:/tmp/bowenos#${HOST}" "${extra_flags[@]}"
+      sudo nixos-rebuild switch --impure --flake "path:/etc/bowenos#${HOST}" "${extra_flags[@]}"
     else
       echo "Missing /tmp/bowenos"
       exit 1
