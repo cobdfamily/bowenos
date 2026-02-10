@@ -15,7 +15,6 @@
     ];
     files = [
       "/etc/adjtime"
-      "/etc/hostid"
       "/etc/machine-id"
       "/etc/ssh/ssh_host_ecdsa_key"
       "/etc/ssh/ssh_host_ecdsa_key.pub"
