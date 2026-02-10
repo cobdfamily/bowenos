@@ -43,7 +43,7 @@ in
           efi /EFI/Linux/${config.system.boot.loader.ukiFile}
         '';
       };
-      boot.loader.systemd-boot.extraInstallCommands = ''
+      system.activationScripts."systemd-boot-uki".text = ''
         set -euo pipefail
         uki_file="${config.system.boot.loader.ukiFile}"
         ${pkgs.coreutils}/bin/mkdir -p /boot/EFI/Linux
