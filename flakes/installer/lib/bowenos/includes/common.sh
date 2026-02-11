@@ -134,8 +134,31 @@ select_host_if_needed() {
   fi
 }
 
-require_mountpoint() {
+ensure_mountpoint() {
   local path="$1"
+  local label="$2"
+
+  if mountpoint -q "${path}"; then
+    return 0
+  fi
+
+  ${MKDIR} -p "${path}"
+  if [[ -z "${label}" ]]; then
+    echo "Required mountpoint is not mounted: ${path}" >&2
+    exit 2
+  fi
+
+  if [[ ! -e "/dev/disk/by-partlabel/${label}" ]]; then
+    echo "Required mountpoint is not mounted: ${path}" >&2
+    echo "Missing partition label: /dev/disk/by-partlabel/${label}" >&2
+    exit 2
+  fi
+
+  if ! mount "/dev/disk/by-partlabel/${label}" "${path}"; then
+    echo "Failed to mount /dev/disk/by-partlabel/${label} on ${path}" >&2
+    exit 2
+  fi
+
   if ! mountpoint -q "${path}"; then
     echo "Required mountpoint is not mounted: ${path}" >&2
     exit 2
