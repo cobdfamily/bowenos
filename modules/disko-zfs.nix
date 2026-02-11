@@ -30,7 +30,7 @@ let
     content = {
       type = "filesystem";
       format = "vfat";
-      mountpoint = "/bootA";
+      mountpoint = "/boot";
       mountOptions = [ "nofail" "x-systemd.device-timeout=1s" ];
     };
   };

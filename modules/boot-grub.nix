@@ -32,7 +32,7 @@ in
       boot.loader.grub.enable = true;
       boot.loader.grub.efiSupport = true;
       boot.loader.grub.device = "nodev";
-      boot.loader.efi.efiSysMountPoint = "/bootA";
+      boot.loader.efi.efiSysMountPoint = "/boot";
       boot.loader.grub.efiInstallAsRemovable = useMirror;
       boot.loader.efi.canTouchEfiVariables = !useMirror;
       boot.loader.systemd-boot.enable = false;
@@ -47,19 +47,19 @@ in
         fi
       '';
 
-      fileSystems."/bootA".options = [ "nofail" "x-systemd.device-timeout=1s" ];
+      fileSystems."/boot".options = [ "nofail" "x-systemd.device-timeout=1s" ];
       fileSystems."/bootB".options = [ "nofail" "x-systemd.device-timeout=1s" ];
 
       system.activationScripts."grub-efi-mirror".text = ''
         if ${pkgs.util-linux}/bin/mountpoint -q /bootB; then
           ${pkgs.coreutils}/bin/mkdir -p /bootB
-          if ${pkgs.coreutils}/bin/test -d /bootA/EFI; then
+          if ${pkgs.coreutils}/bin/test -d /boot/EFI; then
             ${pkgs.coreutils}/bin/rm -rf /bootB/EFI
-            ${pkgs.coreutils}/bin/cp -a /bootA/EFI /bootB/
+            ${pkgs.coreutils}/bin/cp -a /boot/EFI /bootB/
           fi
-          if ${pkgs.coreutils}/bin/test -d /bootA/grub; then
+          if ${pkgs.coreutils}/bin/test -d /boot/grub; then
             ${pkgs.coreutils}/bin/rm -rf /bootB/grub
-            ${pkgs.coreutils}/bin/cp -a /bootA/grub /bootB/
+            ${pkgs.coreutils}/bin/cp -a /boot/grub /bootB/
           fi
         fi
       '';
