@@ -9,6 +9,7 @@
     ../../modules/persistence.nix
     ../../modules/console-serial.nix
     ../../modules/boot.nix
+    ../../modules/system-emergency.nix
     ../../modules/services/nfs.nix
     ../../modules/services/iscsi.nix
   ];
