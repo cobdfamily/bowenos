@@ -33,8 +33,8 @@ in
       boot.loader.grub.efiSupport = true;
       boot.loader.grub.device = "nodev";
       boot.loader.efi.efiSysMountPoint = "/bootA";
-      boot.loader.efi.canTouchEfiVariables = true;
       boot.loader.grub.efiInstallAsRemovable = useMirror;
+      boot.loader.efi.canTouchEfiVariables = !useMirror;
       boot.loader.systemd-boot.enable = false;
       boot.loader.grub.extraConfig = ''
         if [ -s $prefix/grubenv ]; then
