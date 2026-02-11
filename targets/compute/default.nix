@@ -5,7 +5,7 @@
     ../../modules/base-packages.nix
     ../../modules/users-ssh.nix
     ../../modules/networking.nix
-    ../../modules/storage-root-tmpfs.nix
+    ../../modules/storage-tmpfs-root.nix
     ../../modules/storage-zfs.nix
     ../../modules/persistence.nix
     ../../modules/console-serial.nix
