@@ -5,5 +5,6 @@
     vim
     jq
     rsync
+    utils-linux
   ];
 }
