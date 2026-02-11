@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=../../lib/bowenos/includes/common.sh
-source "${SCRIPT_DIR}/../lib/bowenos/includes/common.sh"
+source "${SCRIPT_DIR}/../../lib/bowenos/includes/common.sh"
 
 if [[ -d /tmp/bowenos ]]; then
   INVENTORY_ROOT="/tmp/bowenos"
