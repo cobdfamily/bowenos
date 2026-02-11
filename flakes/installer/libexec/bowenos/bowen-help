@@ -5,9 +5,9 @@ cat <<'USAGE'
 Usage: bowenos <command>
 
 Commands:
-  iso          Build the bootstrap ISO
+  create-iso   Build the bootstrap ISO
   setup        Create /tmp/bowenos inventory for a new host
-  disko        Partition + create mirrored rpool (destructive)
+  partition    Partition + create mirrored rpool (destructive)
   install      Run nixos-install for TARGET
   update       Run nixos-rebuild switch for TARGET
   iscsi-check  Validate iSCSI backing devices exist
