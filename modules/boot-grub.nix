@@ -40,9 +40,9 @@ in
         if [ -s $prefix/grubenv ]; then
           load_env
         fi
-        if [ "${recordfail}" = 1 ]; then
-          if [ -n "${last_successful}" ]; then
-            set default="${last_successful}"
+        if [ "''${recordfail:-0}" = 1 ]; then
+          if [ -n "''${last_successful:-}" ]; then
+            set default="''${last_successful}"
           fi
         fi
       '';
@@ -73,9 +73,9 @@ in
         if [ -s $prefix/grubenv ]; then
           load_env
         fi
-        if [ "${recordfail}" = 1 ]; then
-          if [ -n "${last_successful}" ]; then
-            set default="${last_successful}"
+        if [ "''${recordfail:-0}" = 1 ]; then
+          if [ -n "''${last_successful:-}" ]; then
+            set default="''${last_successful}"
           fi
         fi
       '';
