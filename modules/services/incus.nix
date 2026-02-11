@@ -13,41 +13,43 @@ in {
     lanProfileName = lib.mkOption { type = lib.types.str; default = "bridge-to-lan"; };
   };
 
-  config = lib.mkIf cfg.enable {
-    # Incus requires nftables on NixOS.
-    networking.nftables.enable = true;
+  config = lib.mkMerge [
+    { bowenos.incusPreseed.enable = lib.mkDefault true; }
+    (lib.mkIf cfg.enable {
+      # Incus requires nftables on NixOS.
+      networking.nftables.enable = true;
 
-    virtualisation.incus.enable = true;
-    environment.systemPackages = [ pkgs.incus pkgs.jq pkgs.zfs ];
-    networking.firewall.allowedTCPPorts = [ 8443 ];
+      virtualisation.incus.enable = true;
+      environment.systemPackages = [ pkgs.incus pkgs.jq pkgs.zfs ];
+      networking.firewall.allowedTCPPorts = [ 8443 ];
 
-    systemd.services.incus-cert-bootstrap = {
-      description = "Ensure Incus TLS certs exist before daemon start";
-      before = [ "incus.service" ];
-      wantedBy = [ "incus.service" ];
-      serviceConfig = {
-        Type = "oneshot";
-        RemainAfterExit = true;
+      systemd.services.incus-cert-bootstrap = {
+        description = "Ensure Incus TLS certs exist before daemon start";
+        before = [ "incus.service" ];
+        wantedBy = [ "incus.service" ];
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+        };
+        script = ''
+          set -euo pipefail
+          ${pkgs.coreutils}/bin/mkdir -p /var/lib/incus
+          if [ ! -f /var/lib/incus/server.crt ] || [ ! -f /var/lib/incus/server.key ]; then
+            umask 077
+            ${pkgs.openssl}/bin/openssl req -x509 -newkey rsa:4096 -nodes \
+              -keyout /var/lib/incus/server.key \
+              -out /var/lib/incus/server.crt \
+              -days 3650 \
+              -subj "/CN=incus"
+          fi
+        '';
       };
-      script = ''
-        set -euo pipefail
-        ${pkgs.coreutils}/bin/mkdir -p /var/lib/incus
-        if [ ! -f /var/lib/incus/server.crt ] || [ ! -f /var/lib/incus/server.key ]; then
-          umask 077
-          ${pkgs.openssl}/bin/openssl req -x509 -newkey rsa:4096 -nodes \
-            -keyout /var/lib/incus/server.key \
-            -out /var/lib/incus/server.crt \
-            -days 3650 \
-            -subj "/CN=incus"
-        fi
-      '';
-    };
 
-    systemd.services.incus-preseed = {
-      description = "Init Incus + storage pool + profiles";
-      after = [ "network-online.target" "zfs-mount.service" "incus.service" ];
-      requires = [ "incus.service" ];
-      wants = [ "network-online.target" "incus.service" ];
+      systemd.services.incus-preseed = {
+        description = "Init Incus + storage pool + profiles";
+        after = [ "network-online.target" "zfs-mount.service" "incus.service" ];
+        requires = [ "incus.service" ];
+        wants = [ "network-online.target" "incus.service" ];
         wantedBy = [ "multi-user.target" ];
         serviceConfig = { Type = "oneshot"; RemainAfterExit = true; };
         script = ''
@@ -88,5 +90,6 @@ in {
           fi
         '';
       };
-  };
+    })
+  ];
 }
