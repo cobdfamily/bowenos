@@ -6,7 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/../../lib/bowenos/includes/common.sh"
 
 if [[ -f /etc/bowenos/flake.nix ]]; then
-  HOST = cat /etc/hostname
+  HOST="$(cat /etc/hostname)"
   ensure_mountpoint /boot "disk-bootA-esp"
   if [[ -e /dev/disk/by-partlabel/disk-bootB-esp ]]; then
     ensure_mountpoint /bootB "disk-bootB-esp"
