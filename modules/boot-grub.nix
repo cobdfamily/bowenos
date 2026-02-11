@@ -121,7 +121,6 @@ in
                 for (i = 1; i <= NF; i++) {
                   if ($i == "--id") {
                     id = $(i + 1);
-                    gsub(/'\''/, "", id);
                   }
                 }
               }
@@ -129,6 +128,7 @@ in
               inmenu && found && id != "" { print id; exit }
               inmenu && $1 == "}" { inmenu = 0; found = 0; id = ""; }
             ' "$grub_cfg"
+          | ${pkgs.coreutils}/bin/tr -d "'"
           )"
 
           if [ -z "$entry_id" ]; then
