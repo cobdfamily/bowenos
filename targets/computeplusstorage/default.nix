@@ -1,16 +1,7 @@
 { ... }:
 {
   imports = [
-    ../../modules/base.nix
-    ../../modules/base-packages.nix
-    ../../modules/users-ssh.nix
-    ../../modules/networking.nix
-    ../../modules/storage-tmpfs-root.nix
-    ../../modules/storage-zfs.nix
-    ../../modules/persistence.nix
-    ../../modules/console-serial.nix
-    ../../modules/boot.nix
-    ../../modules/system-emergency.nix
+    ../../modules/hardware/server.nix
     ../../modules/lan-bridge.nix
     ../../modules/services/incus.nix
     ../../modules/services/nfs.nix
