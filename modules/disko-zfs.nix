@@ -30,7 +30,7 @@ let
     content = {
       type = "filesystem";
       format = "vfat";
-      mountpoint = "/boot";
+      mountpoint = "/bootA";
       mountOptions = [ "nofail" "x-systemd.device-timeout=1s" ];
     };
   };
@@ -41,7 +41,7 @@ let
     content = {
       type = "filesystem";
       format = "vfat";
-      mountpoint = "/boot-fallback";
+      mountpoint = "/bootB";
       mountOptions = [ "nofail" "x-systemd.device-timeout=1s" ];
     };
   };
