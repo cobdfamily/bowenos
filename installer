@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SCRIPT_DIR="$(dirname "$0")"
+SCRIPT_DIR="/tmp/installer"
 TARGET_BIN="${SCRIPT_DIR}/flakes/installer/bin/bowenos"
 
 if [[ ! -x "${TARGET_BIN}" ]]; then
