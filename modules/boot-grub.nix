@@ -35,6 +35,7 @@ in
       boot.loader.grub.efiSysMountPoint = "/boot";
       boot.loader.efi.canTouchEfiVariables = true;
       boot.loader.grub.efiInstallAsRemovable = useMirror;
+      boot.loader.systemd-boot.enable = false;
 
       fileSystems."/boot".options = [ "nofail" "x-systemd.device-timeout=1s" ];
       fileSystems."/boot-fallback".options = [ "nofail" "x-systemd.device-timeout=1s" ];
@@ -57,6 +58,7 @@ in
     (lib.mkIf (!useEfi) {
       boot.loader.grub.enable = true;
       boot.loader.grub.efiSupport = false;
+      boot.loader.systemd-boot.enable = false;
       boot.loader.grub.devices = if useMirror then [ bootaPath bootbPath ] else [ bootaPath ];
     })
   ];
