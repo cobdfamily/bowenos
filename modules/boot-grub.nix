@@ -62,6 +62,10 @@ in
             ${pkgs.coreutils}/bin/rm -rf /bootB/grub
             ${pkgs.coreutils}/bin/cp -a /boot/grub /bootB/
           fi
+          if ${pkgs.coreutils}/bin/test -d /boot/kernels; then
+            ${pkgs.coreutils}/bin/rm -rf /bootB/kernels
+            ${pkgs.coreutils}/bin/cp -a /boot/kernels /bootB/
+          fi
         fi
       '';
     })
