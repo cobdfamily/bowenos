@@ -128,8 +128,8 @@ in
               inmenu && found && id != "" { print id; exit }
               inmenu && $1 == "}" { inmenu = 0; found = 0; id = ""; }
             ' "$grub_cfg"
-          | ${pkgs.coreutils}/bin/tr -d "'"
           )"
+          entry_id="''${entry_id//\'/}"
 
           if [ -z "$entry_id" ]; then
             echo "grub-boot-success: failed to resolve entry id" >&2
