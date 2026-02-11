@@ -32,7 +32,7 @@ in
       boot.loader.grub.enable = true;
       boot.loader.grub.efiSupport = true;
       boot.loader.grub.device = "nodev";
-      boot.loader.grub.efiSysMountPoint = "/bootA";
+      boot.loader.efi.efiSysMountPoint = "/bootA";
       boot.loader.efi.canTouchEfiVariables = true;
       boot.loader.grub.efiInstallAsRemovable = useMirror;
       boot.loader.systemd-boot.enable = false;
