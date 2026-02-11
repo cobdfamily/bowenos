@@ -1,7 +1,6 @@
 { lib, pkgs, config, ... }:
 let
   cfg = config.bowenos.incusPreseed;
-  isIncusTarget = builtins.elem config.bowenos.identity.target [ "compute" "computeplusstorage" ];
 in {
   options.bowenos.incusPreseed = {
     enable = lib.mkEnableOption "Initialize Incus automatically";
@@ -14,19 +13,7 @@ in {
     lanProfileName = lib.mkOption { type = lib.types.str; default = "bridge-to-lan"; };
   };
 
-  config = lib.mkMerge [
-    (lib.mkIf isIncusTarget {
-      bowenos.incusPreseed = {
-        enable = lib.mkDefault true;
-        storagePoolName = lib.mkDefault "zfs-ssd";
-        zfsSource = lib.mkDefault "rpool/incus";
-        createDefaultNetwork = lib.mkDefault true;
-        createLanProfile = lib.mkDefault true;
-        lanBridgeParent = lib.mkDefault "br0";
-        lanProfileName = lib.mkDefault "bridge-to-lan";
-      };
-    })
-    (lib.mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
       # Incus requires nftables on NixOS.
       networking.nftables.enable = true;
 
@@ -79,6 +66,5 @@ in {
           fi
         '';
       };
-    })
-  ];
+  };
 }

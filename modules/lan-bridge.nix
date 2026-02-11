@@ -1,7 +1,6 @@
 { lib, config, ... }:
 let
   cfg = config.bowenos.lanBridge;
-  isIncusTarget = builtins.elem config.bowenos.identity.target [ "compute" "computeplusstorage" ];
 in {
   options.bowenos.lanBridge = {
     enable = lib.mkEnableOption "Create a LAN bridge for Incus instances";
@@ -9,15 +8,7 @@ in {
     uplinkMatch = lib.mkOption { type = lib.types.str; default = "en*"; };
   };
 
-  config = lib.mkMerge [
-    (lib.mkIf isIncusTarget {
-      bowenos.lanBridge = {
-        enable = lib.mkDefault true;
-        bridgeName = lib.mkDefault "br0";
-        uplinkMatch = lib.mkDefault "en*";
-      };
-    })
-    (lib.mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
     systemd.network.netdevs."10-${cfg.bridgeName}" = {
       netdevConfig = { Name = cfg.bridgeName; Kind = "bridge"; };
     };
@@ -31,6 +22,5 @@ in {
       matchConfig.Name = cfg.bridgeName;
       networkConfig.DHCP = "yes";
     };
-    })
-  ];
+  };
 }
