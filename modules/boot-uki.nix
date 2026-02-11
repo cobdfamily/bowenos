@@ -20,6 +20,10 @@ in
       set -euo pipefail
       uki_file="${config.system.boot.loader.ukiFile}"
       ${pkgs.coreutils}/bin/mkdir -p /boot/EFI/Linux
+      ${pkgs.coreutils}/bin/mkdir -p /boot/loader
+      if [ ! -f /boot/loader/loader.conf ]; then
+        ${pkgs.coreutils}/bin/printf "default nixos\n" > /boot/loader/loader.conf
+      fi
       ${pkgs.systemdUkify}/lib/systemd/ukify build \
         --output "/boot/EFI/Linux/$uki_file" \
         --linux "$systemConfig/kernel" \
