@@ -116,9 +116,9 @@ in
       };
 
       datasets = {
-        root = {
+        tmp = {
           type = "zfs_fs";
-          mountpoint = "/";
+          mountpoint = "/tmp";
           options.mountpoint = "legacy";
         };
         nix = {
@@ -131,7 +131,6 @@ in
           mountpoint = "/persist";
           options.mountpoint = "legacy";
         };
-        incus = { type = "zfs_fs"; mountpoint = "/rpool-incus"; };
       };
     };
   };
