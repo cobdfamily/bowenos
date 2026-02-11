@@ -7,10 +7,8 @@
     hideMounts = true;
     directories = [
       "/etc/bowenos"
-      "/opt/cprail"
       "/var/lib/incus"
       "/var/lib/nixos"
-      "/var/lib/systemd/coredump"
       "/var/log"
     ];
     files = [
