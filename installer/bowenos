@@ -24,17 +24,16 @@ fi
 
 usage() {
   cat <<'USAGE'
-Usage: install.sh <command>
+Usage: bowenos <command>
 
 Commands:
   iso          Build the bootstrap ISO
   setup        Create /tmp/bowenos inventory for a new host
   disko        Partition + create mirrored rpool (destructive)
   install      Run nixos-install for TARGET
-  switch       Run nixos-rebuild switch for TARGET
+  update       Run nixos-rebuild switch for TARGET
   iscsi-check  Validate iSCSI backing devices exist
   hardware-scan  Generate hardware-configuration.nix into repo
-  repair        Rebuild installed system mounted at /mnt (via nixos-enter)
 USAGE
 }
 
@@ -314,7 +313,7 @@ case "${CMD}" in
       exit 2
     fi
     ;;
-  switch)
+  update)
     if [[ -f /etc/bowenos/flake.nix ]]; then
       select_host_if_needed
       extra_flags=()
@@ -360,14 +359,6 @@ case "${CMD}" in
       ${CP} /tmp/hardware/etc/nixos/hardware-configuration.nix "${ROOT}/hardware-configuration.nix"
       echo "Wrote ${ROOT}/hardware-configuration.nix"
     fi
-    ;;
-  repair)
-    if ! mountpoint -q /mnt; then
-      echo "/mnt is not a mountpoint. Mount rpool/root at /mnt first." >&2
-      exit 2
-    fi
-    nixos-enter --root /mnt -- \
-      nixos-rebuild switch --impure --flake "/etc/nixos#${TARGET}"
     ;;
   *)
     usage
