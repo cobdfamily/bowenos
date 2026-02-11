@@ -30,6 +30,7 @@ in
 
     (lib.mkIf useEfi {
       boot.loader.grub.enable = true;
+      boot.loader.grub.fsIdentifier = "provided";
       boot.loader.grub.efiSupport = true;
       boot.loader.grub.device = "nodev";
       boot.loader.efi.efiSysMountPoint = "/boot";
@@ -67,6 +68,7 @@ in
 
     (lib.mkIf (!useEfi) {
       boot.loader.grub.enable = true;
+      boot.loader.grub.fsIdentifier = "provided";
       boot.loader.grub.efiSupport = false;
       boot.loader.systemd-boot.enable = false;
       boot.loader.grub.extraConfig = ''
