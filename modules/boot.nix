@@ -1,5 +1,5 @@
 { ... }:
 {
   imports = [ ./boot-grub.nix ];
-  boot.loader.timeout = 30;
+  boot.loader.timeout = 20;
 }
