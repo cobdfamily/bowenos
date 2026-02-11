@@ -2,4 +2,11 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-exec "${SCRIPT_DIR}/flakes/installer/bin/bowenos" "$@"
+TARGET_BIN="${SCRIPT_DIR}/flakes/installer/bin/bowenos"
+
+if [[ ! -x "${TARGET_BIN}" ]]; then
+  echo "Installer binary not found or not executable: ${TARGET_BIN}" >&2
+  exit 2
+fi
+
+exec "${TARGET_BIN}" "$@"
