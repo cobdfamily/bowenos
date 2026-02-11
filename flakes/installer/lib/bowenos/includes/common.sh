@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../../.." && pwd)"
-INVENTORY_ROOT="${ROOT}/installer/flakes/inventory"
+INVENTORY_ROOT="${ROOT}/flakes/inventory"
 HOST="${HOST:-}"
 TARGET="${TARGET:-computeplusstorage}"
 

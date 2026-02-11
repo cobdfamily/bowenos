@@ -51,7 +51,7 @@ You can set the target via host inventory or by exporting `TARGET` for ad‑hoc 
 
 ## Host inventory (recommended)
 
-All host-specific settings live in `installer/flakes/inventory/hosts/<hostname>/local.nix`.
+All host-specific settings live in `flakes/inventory/hosts/<hostname>/local.nix`.
 These are mapped into `bowenos.*` by the inventory flake.
 
 Key fields:
