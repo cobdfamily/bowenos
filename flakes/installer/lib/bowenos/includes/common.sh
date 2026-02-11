@@ -133,3 +133,11 @@ select_host_if_needed() {
     exit 2
   fi
 }
+
+require_mountpoint() {
+  local path="$1"
+  if ! mountpoint -q "${path}"; then
+    echo "Required mountpoint is not mounted: ${path}" >&2
+    exit 2
+  fi
+}

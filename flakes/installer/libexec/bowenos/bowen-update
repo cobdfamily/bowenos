@@ -7,6 +7,10 @@ source "${SCRIPT_DIR}/../../lib/bowenos/includes/common.sh"
 
 if [[ -f /etc/bowenos/flake.nix ]]; then
   select_host_if_needed
+  require_mountpoint /boot
+  if [[ -d /bootB ]]; then
+    require_mountpoint /bootB
+  fi
   extra_flags=()
   if [[ -d /tmp/installer ]]; then
     extra_flags+=(--override-input bowenos "path:/tmp/installer")
