@@ -50,6 +50,7 @@
           target = host.target;
           hostModule = host.module or (_: { });
           hw = hostPath + "/hardware-configuration.nix";
+          usersFile = hostPath + "/users.nix";
           identityDefaults = { ... }: {
             bowenos.identity.hostName = lib.mkDefault name;
             bowenos.identity.target = lib.mkDefault target;
@@ -84,6 +85,7 @@
               impermanence.nixosModules.impermanence
             ]
             ++ (if builtins.pathExists hw then [ hw ] else [ ])
+            ++ (if builtins.pathExists usersFile then [ usersFile ] else [ ])
             ++ [
               identityDefaults
               shortModule
