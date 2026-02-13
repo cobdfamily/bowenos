@@ -8,7 +8,7 @@
     impermanence.url = "github:nix-community/impermanence";
     impermanence.inputs.nixpkgs.follows = "nixpkgs";
     bcrail.url = "github:cobdfamily/bcrail";
-    installer.url = "path:./flakes/iso?narHash=sha256-9B6mK5802wfkZR5n8xrOKS/8/VjgH4jly0E+FuqfCU8=";
+    installer.url = "github:cobdfamily/bowenos-tools";
   };
 
   outputs = inputs@{ self, nixpkgs, disko, impermanence, installer, ... }:
