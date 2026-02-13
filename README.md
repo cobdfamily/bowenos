@@ -60,12 +60,12 @@ For current command behavior, run:
 nix run github:cobdfamily/bowenos-tools -- help
 ```
 
-1) Create inventory in `/tmp/bowenos`:
+1) Create `/tmp/bowenos` inventory:
 ```bash
 nix run github:cobdfamily/bowenos-tools -- setup
 ```
 
-2) Partition + create mirrored rpool (WIPES boot disks):
+2) Apply target disk layout with disko (DESTRUCTIVE):
 ```bash
 nix run github:cobdfamily/bowenos-tools -- partition
 ```
@@ -73,13 +73,14 @@ nix run github:cobdfamily/bowenos-tools -- partition
 It will prompt `y/N` before wiping. Use `FORCE=1 nix run github:cobdfamily/bowenos-tools -- partition` to skip prompting.
 Ensure `/mnt/persist` is mounted before running `install`.
 
-3) Install:
+3) Install NixOS for selected inventory host:
 ```bash
 nix run github:cobdfamily/bowenos-tools -- install
 reboot
 ```
 
 ## After boot
+Switch system for current host:
 ```bash
 cd /etc/bowenos
 nix run github:cobdfamily/bowenos-tools -- update
