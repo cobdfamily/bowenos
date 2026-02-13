@@ -11,7 +11,7 @@
     bowenos-tools.url = "github:cobdfamily/bowenos-tools";
   };
 
-  outputs = inputs@{ self, nixpkgs, disko, impermanence, installer, ... }:
+  outputs = inputs@{ self, nixpkgs, disko, impermanence, bowenos-tools, ... }:
     let
       defaultSystem = "x86_64-linux";
       systems = [

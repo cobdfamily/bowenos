@@ -1,7 +1,7 @@
 { ... }:
 {
   imports = [
-    ./bowenos-tools-import.nix
+    ./imports/bowenos-tools-import.nix
   ];
 
   services.bowenos-tools = {
