@@ -12,6 +12,8 @@ in {
     enable = lib.mkEnableOption "bcrail service";
     bridge = lib.mkOption { type = lib.types.str; default = "incusbr0"; };
     pool = lib.mkOption { type = lib.types.str; default = "zfs-ssd"; };
+    remoteUser = lib.mkOption { type = lib.types.str; default = "vancouver"; };
+    stateDevice = lib.mkOption { type = lib.types.nullOr lib.types.str; default = null; };
     setupOnBoot = lib.mkOption { type = lib.types.bool; default = false; };
   };
 
@@ -35,6 +37,8 @@ in {
 
         network.bridge = cfg.bridge;
         storage.pool = cfg.pool;
+        remoteUser = cfg.remoteUser;
+        stateDevice = cfg.stateDevice;
 
         ignitionFile = bcrail + "/etc/bcrail/ignition.json";
         locomotiveEnvFile = bcrail + "/etc/bcrail/locomotive.env";

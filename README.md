@@ -16,7 +16,7 @@ All targets include:
   - persists (files): `/etc/adjtime`, `/etc/hostid`, `/etc/machine-id`, `/etc/ssh/ssh_host_ecdsa_key`, `/etc/ssh/ssh_host_ecdsa_key.pub`, `/etc/ssh/ssh_host_ed25519_key`, `/etc/ssh/ssh_host_ed25519_key.pub`, `/etc/ssh/ssh_host_rsa_key`, `/etc/ssh/ssh_host_rsa_key.pub`, `/var/lib/dbus/machine-id`
 - SSH locked down to **keys only**, **root login disabled**
 - Admin user created at build time from env vars
-- GRUB with mirrored EFI partitions (`/boot` and `/boot-fallback`)
+- GRUB with mirrored EFI partitions (`/boot` and `/bootB`)
 
 `compute`/`computeplusstorage` additionally include:
 - Incus init + ZFS-backed Incus storage pool
@@ -38,7 +38,7 @@ nix run github:cobdfamily/bowenos-tools -- install
 
 ## Host inventory (recommended)
 
-`nix run github:cobdfamily/bowenos-tools -- setup` creates `/tmp/bowenos` from `bowenos-inventory-template` and writes host settings to `hosts/<hostname>/local.nix`.
+`nix run github:cobdfamily/bowenos-tools -- setup` creates `/tmp/bowenos` from a fresh shallow clone of `bowenos-inventory-template` and writes host settings to `hosts/<hostname>/local.nix`.
 For long-lived production inventory, keep the same host structure in your `bowenos-inventory` repository.
 These are mapped into `bowenos.*` by the inventory flake.
 

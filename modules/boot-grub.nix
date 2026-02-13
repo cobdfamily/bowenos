@@ -48,11 +48,13 @@ in
         fi
       '';
 
-      fileSystems."/boot".options = [ "nofail" "x-systemd.device-timeout=1s" ];
-      fileSystems."/bootB".options = [ "nofail" "x-systemd.device-timeout=1s" ];
+      fileSystems = lib.mkMerge [
+        { "/boot".options = [ "nofail" "x-systemd.device-timeout=1s" ]; }
+        (lib.mkIf useMirror { "/bootB".options = [ "nofail" "x-systemd.device-timeout=1s" ]; })
+      ];
 
       system.activationScripts."grub-efi-mirror".text = ''
-        if ${pkgs.util-linux}/bin/mountpoint -q /bootB; then
+        if ${lib.boolToString useMirror} && ${pkgs.util-linux}/bin/mountpoint -q /bootB; then
           ${pkgs.coreutils}/bin/mkdir -p /bootB
           if ${pkgs.coreutils}/bin/test -d /boot/EFI; then
             ${pkgs.coreutils}/bin/rm -rf /bootB/EFI
