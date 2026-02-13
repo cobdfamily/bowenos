@@ -1,23 +1,15 @@
-args@{ lib, pkgs, ... }:
+args@{ lib, pkgs, options, ... }:
 let
   hasInputs = args ? inputs;
   inputs = if hasInputs then args.inputs else { };
-  hasBcrailInput = hasInputs && (inputs ? bcrail);
-  bcrail = if hasBcrailInput then inputs.bcrail else null;
+  hasBcrailInput = hasInputs && (inputs ? bcrail) && (inputs.bcrail != null);
+  hasServicesBcrail = options ? services && options.services ? bcrail;
+  bcrail = if hasBcrailInput then inputs.bcrail else { };
 in
 {
   imports = lib.optionals hasBcrailInput [ bcrail.nixosModules.default ];
 
-  config = lib.mkMerge [
-    {
-      assertions = [
-        {
-          assertion = hasBcrailInput;
-          message = "modules/services/bcrail.nix requires flake input 'bcrail' passed through specialArgs.inputs.";
-        }
-      ];
-    }
-    (lib.mkIf hasBcrailInput {
+  config = lib.mkIf (hasBcrailInput && hasServicesBcrail) {
       services.bcrail.enable = lib.mkDefault true;
       services.bcrail.package = lib.mkDefault bcrail.packages.${pkgs.system}.bcrail;
       services.bcrail.stateDir = lib.mkDefault "/var/lib/bcrail";
@@ -27,8 +19,5 @@ in
       services.bcrail.remoteUser = lib.mkDefault "vancouver";
       services.bcrail.stateDevice = lib.mkDefault null;
       services.bcrail.setupOnBoot = lib.mkDefault false;
-      services.bcrail.ignitionFile = lib.mkDefault (bcrail + "/etc/bcrail/ignition.json");
-      services.bcrail.locomotiveEnvFile = lib.mkDefault (bcrail + "/etc/bcrail/locomotive.env");
-    })
-  ];
+  };
 }
