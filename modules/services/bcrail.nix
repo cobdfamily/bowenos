@@ -1,22 +1,44 @@
-{ inputs, pkgs, ... }:
-{
-  imports = [
-    inputs.bcrail.nixosModules.default
-  ];
+{ inputs ? null, lib, pkgs, config, ... }:
+let
+  cfg = config.bowenos.bcrail;
+  hasBcrailInput = inputs != null && (inputs ? bcrail);
+  bcrail = if hasBcrailInput then inputs.bcrail else null;
+in {
+  imports = lib.optional hasBcrailInput bcrail.nixosModules.default;
 
-  services.bcrail = {
-    enable = true;
-    package = inputs.bcrail.packages.${pkgs.system}.bcrail;
-
-    stateDir = "/var/lib/bcrail";
-    configDir = "/etc/bcrail";
-
-    network.bridge = "incusbr0";
-    storage.pool = "zfs-ssd";
-
-    ignitionFile = inputs.bcrail + "/etc/bcrail/ignition.json";
-    locomotiveEnvFile = inputs.bcrail + "/etc/bcrail/locomotive.env";
-
-    setupOnBoot = false;
+  options.bowenos.bcrail = {
+    enable = lib.mkEnableOption "bcrail service";
+    bridge = lib.mkOption { type = lib.types.str; default = "incusbr0"; };
+    pool = lib.mkOption { type = lib.types.str; default = "zfs-ssd"; };
+    setupOnBoot = lib.mkOption { type = lib.types.bool; default = false; };
   };
+
+  config = lib.mkMerge [
+    { bowenos.bcrail.enable = lib.mkDefault hasBcrailInput; }
+    {
+      assertions = [
+        {
+          assertion = (!cfg.enable) || hasBcrailInput;
+          message = "bowenos.bcrail.enable requires flake input 'bcrail' and passing 'inputs' in specialArgs.";
+        }
+      ];
+    }
+    (lib.mkIf (cfg.enable && hasBcrailInput) {
+      services.bcrail = {
+        enable = true;
+        package = bcrail.packages.${pkgs.system}.bcrail;
+
+        stateDir = "/var/lib/bcrail";
+        configDir = "/etc/bcrail";
+
+        network.bridge = cfg.bridge;
+        storage.pool = cfg.pool;
+
+        ignitionFile = bcrail + "/etc/bcrail/ignition.json";
+        locomotiveEnvFile = bcrail + "/etc/bcrail/locomotive.env";
+
+        inherit (cfg) setupOnBoot;
+      };
+    })
+  ];
 }
