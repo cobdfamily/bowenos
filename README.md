@@ -7,7 +7,7 @@ This repo provides four flake targets:
 - `compute`: Incus host (ZFS-backed) + LAN bridge profile
 - `computeplusstorage`: everything in `compute` **plus** NFS server enabled + iSCSI targets from per-target files
 - `storage`: NFS + iSCSI server without Incus
-- `spine`: VM profile with ext4 `/persist`, ephemeral root, and Docker tooling
+- `spine`: VM profile with ext4 `/nix` + ext4 `/persist` (on `/dev/sdb`), ephemeral root, and Docker tooling
 
 ## What you get
 All targets include:
@@ -31,7 +31,7 @@ All targets include:
 - iSCSI target application from `modules/services/iscsi/targets/*.nix` (you create zvols manually)
 
 `spine` additionally includes:
-- ext4 `/persist` Disko layout (`diskMode = "single"`)
+- ext4 `/nix` on remaining boot disk space and ext4 `/persist` on `/dev/sdb` (`diskMode = "single"`)
 - Docker engine and docker-compose package
 
 ## Choosing a target
