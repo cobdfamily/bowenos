@@ -10,7 +10,7 @@ This repo provides three flake targets:
 
 ## What you get
 All targets include:
-- ZFS mirrored boot pool via **disko**
+- ZFS mirrored boot pool via **Disko**
 - Ephemeral root via **impermanence**
   - persists (directories): `/etc/bowenos`, `/opt/cprail`, `/var/lib/incus`, `/var/lib/nixos`, `/var/lib/systemd/coredump`, `/var/log`
   - persists (files): `/etc/adjtime`, `/etc/hostid`, `/etc/machine-id`, `/etc/ssh/ssh_host_ecdsa_key`, `/etc/ssh/ssh_host_ecdsa_key.pub`, `/etc/ssh/ssh_host_ed25519_key`, `/etc/ssh/ssh_host_ed25519_key.pub`, `/etc/ssh/ssh_host_rsa_key`, `/etc/ssh/ssh_host_rsa_key.pub`, `/var/lib/dbus/machine-id`
@@ -64,8 +64,9 @@ nix run github:cobdfamily/bowenos-tools -- help
 ```bash
 nix run github:cobdfamily/bowenos-tools -- setup
 ```
+`setup` validates hostname characters, host ID format (`8` hex chars), and SSH key prefix (`ssh-...`).
 
-2) Apply target disk layout with disko (DESTRUCTIVE):
+2) Apply target disk layout with Disko (DESTRUCTIVE):
 ```bash
 nix run github:cobdfamily/bowenos-tools -- partition
 ```
