@@ -7,7 +7,7 @@ in
   imports =
     [
       ./options.nix
-      ./tools.nix
+      ./bowenos-tools.nix
       ./system-emergency.nix
     ];
 
