@@ -43,7 +43,7 @@ For long-lived production inventory, keep the same host structure in your `bowen
 These are mapped into `bowenos.*` by the inventory flake.
 
 Key fields:
-- `target` — `compute`, `computeplusstorage`, or `storage`
+- `target` — `compute`, `computeplusstorage`, or `storage` (validated at partition time)
 - `hostId` — 8 hex chars (required by ZFS)
 - `timeZone`, `locale`
 - `adminUser`, `sshPubKey`, `allowNoKey`, `sudoNeedsPassword`, `mutableUsers`, `consolePassword`
