@@ -7,6 +7,7 @@ in
   imports =
     [
       ./options.nix
+      ./tools.nix
       ./system-emergency.nix
     ];
 

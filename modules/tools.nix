@@ -1,7 +1,7 @@
 { ... }:
 {
   imports = [
-    ../imports/bcrail-import.nix
+    ./bowenos-tools-import.nix
   ];
 
   services.bcrail = {

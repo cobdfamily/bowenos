@@ -8,7 +8,7 @@
     impermanence.url = "github:nix-community/impermanence";
     impermanence.inputs.nixpkgs.follows = "nixpkgs";
     bcrail.url = "github:cobdfamily/bcrail";
-    installer.url = "github:cobdfamily/bowenos-tools";
+    bowenos-tools.url = "github:cobdfamily/bowenos-tools";
   };
 
   outputs = inputs@{ self, nixpkgs, disko, impermanence, installer, ... }:
@@ -21,22 +21,8 @@
       forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f system);
     in {
       packages = (forAllSystems (system: {
-        default = installer.packages.${system}.bowenos-tools;
-        bowenos-tools = installer.packages.${system}.bowenos-tools;
       })) // {
-        ${defaultSystem}.iso = installer.packages.${defaultSystem}.iso;
       };
-
-      apps = forAllSystems (system: {
-        default = {
-          type = "app";
-          program = "${installer.packages.${system}.bowenos-tools}/bin/bowenos";
-        };
-        bowenos = {
-          type = "app";
-          program = "${installer.packages.${system}.bowenos-tools}/bin/bowenos";
-        };
-      });
 
       nixosConfigurations = {
         compute = nixpkgs.lib.nixosSystem {
