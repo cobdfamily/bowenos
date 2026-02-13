@@ -71,6 +71,7 @@ nix run github:cobdfamily/bowenos-tools -- partition
 ```
 
 It will prompt `y/N` before wiping. Use `FORCE=1 nix run github:cobdfamily/bowenos-tools -- partition` to skip prompting.
+Ensure `/mnt/persist` is mounted before running `install`.
 
 3) Install:
 ```bash
