@@ -5,6 +5,7 @@ let
   bootaCfg = lib.attrByPath [ "bowenos" "storage" "bootaById" ] "" config;
   boota = if bootaCfg != "" then bootaCfg else get "BOOTA_BYID" "";
   bootaPath = if lib.hasPrefix "/dev/" boota then boota else "/dev/disk/by-id/" + boota;
+  persistPath = "/dev/sdb";
 
   diskModeCfg = lib.attrByPath [ "bowenos" "storage" "diskMode" ] "" config;
   diskMode = if diskModeCfg != "" then diskModeCfg else
@@ -31,6 +32,16 @@ let
     type = "EF02";
   };
 
+  nixPartition = {
+    size = "100%";
+    content = {
+      type = "filesystem";
+      format = "ext4";
+      mountpoint = "/nix";
+      mountOptions = [ "defaults" ];
+    };
+  };
+
   persistPartition = {
     size = "100%";
     content = {
@@ -55,15 +66,28 @@ in
   ];
 
   disko.devices = {
-    disk.bootA = {
-      type = "disk";
-      device = bootaPath;
-      content = {
-        type = "gpt";
-        partitions =
-          (lib.optionalAttrs useEfi { esp = espPartition; })
-          // (lib.optionalAttrs (!useEfi) { bios = biosBootPartition; })
-          // { persist = persistPartition; };
+    disk = {
+      bootA = {
+        type = "disk";
+        device = bootaPath;
+        content = {
+          type = "gpt";
+          partitions =
+            (lib.optionalAttrs useEfi { esp = espPartition; })
+            // (lib.optionalAttrs (!useEfi) { bios = biosBootPartition; })
+            // { nix = nixPartition; };
+        };
+      };
+
+      persist = {
+        type = "disk";
+        device = persistPath;
+        content = {
+          type = "gpt";
+          partitions = {
+            persist = persistPartition;
+          };
+        };
       };
     };
   };
