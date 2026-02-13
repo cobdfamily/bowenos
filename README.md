@@ -55,6 +55,11 @@ Key fields:
 
 ## Install steps (from NixOS installer)
 
+For current command behavior, run:
+```bash
+nix run github:cobdfamily/bowenos-tools -- help
+```
+
 1) Create inventory in `/tmp/bowenos`:
 ```bash
 nix run github:cobdfamily/bowenos-tools -- setup
