@@ -71,7 +71,7 @@ nix run github:cobdfamily/bowenos-tools -- partition
 ```
 
 It will prompt `y/N` before wiping. Use `FORCE=1 nix run github:cobdfamily/bowenos-tools -- partition` to skip prompting.
-Ensure `/mnt/persist` is mounted before running `install`.
+Ensure `/mnt/persist` is mounted (inventory is copied to `/mnt/persist/etc/bowenos`) before running `install`.
 
 3) Install NixOS for selected inventory host:
 ```bash
