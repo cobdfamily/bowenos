@@ -7,10 +7,9 @@
     hideMounts = true;
     directories = [
       "/etc/bowenos"
-      "/var/lib/incus/cluster"
-      "/var/lib/incus/database"
-      "/var/lib/incus/devices"
-      "/var/lib/incus/state"
+      "/etc/bcrail"
+      "/var/lib/bcrail"
+      "/var/lib/incus"
       "/var/lib/nixos"
       "/var/log"
     ];
