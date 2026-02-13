@@ -65,6 +65,7 @@ nix run github:cobdfamily/bowenos-tools -- help
 nix run github:cobdfamily/bowenos-tools -- setup
 ```
 `setup` validates hostname characters, host ID format (`8` hex chars), and SSH key prefix (`ssh-...`).
+For `diskMode = "mirror"`, setup and partitioning require at least two distinct disks.
 
 2) Apply target disk layout with Disko (DESTRUCTIVE):
 ```bash
