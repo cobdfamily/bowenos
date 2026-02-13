@@ -55,25 +55,19 @@ Key fields:
 
 ## Install steps (from NixOS installer)
 
-1) Clone the repo somewhere safe (not under `/mnt`, because partitioning will wipe `/mnt`):
-```bash
-git clone https://github.com/cobdfamily/bowenos /root/bowenos
-cd /root/bowenos
-```
-
-2) Create inventory in `/tmp/bowenos`:
+1) Create inventory in `/tmp/bowenos`:
 ```bash
 nix run github:cobdfamily/bowenos-tools -- setup
 ```
 
-3) Partition + create mirrored rpool (WIPES boot disks):
+2) Partition + create mirrored rpool (WIPES boot disks):
 ```bash
 nix run github:cobdfamily/bowenos-tools -- partition
 ```
 
 It will prompt `y/N` before wiping. Use `FORCE=1 nix run github:cobdfamily/bowenos-tools -- partition` to skip prompting.
 
-4) Install:
+3) Install:
 ```bash
 nix run github:cobdfamily/bowenos-tools -- install
 reboot
