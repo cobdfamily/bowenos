@@ -1,7 +1,9 @@
-{ inputs ? null, lib, pkgs, config, ... }:
+args@{ lib, pkgs, config, ... }:
 let
   cfg = config.bowenos.bcrail;
-  hasBcrailInput = inputs != null && (inputs ? bcrail);
+  hasInputs = args ? inputs;
+  inputs = if hasInputs then args.inputs else null;
+  hasBcrailInput = hasInputs && (inputs ? bcrail);
   bcrail = if hasBcrailInput then inputs.bcrail else null;
 in {
   imports = lib.optional hasBcrailInput bcrail.nixosModules.default;
