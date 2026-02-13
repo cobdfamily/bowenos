@@ -31,8 +31,8 @@ All targets include:
 
 ### Install compute
 ```bash
-TARGET=compute nix run github:cobdfamily/bowenos-tools -- partition
-TARGET=compute nix run github:cobdfamily/bowenos-tools -- install
+nix run github:cobdfamily/bowenos-tools -- partition
+nix run github:cobdfamily/bowenos-tools -- install
 ```
 
 ### Install computeplusstorage (default)
@@ -43,11 +43,11 @@ nix run github:cobdfamily/bowenos-tools -- install
 
 ### Install storage
 ```bash
-TARGET=storage nix run github:cobdfamily/bowenos-tools -- partition
-TARGET=storage nix run github:cobdfamily/bowenos-tools -- install
+nix run github:cobdfamily/bowenos-tools -- partition
+nix run github:cobdfamily/bowenos-tools -- install
 ```
 
-You can set the target via host inventory or by exporting `TARGET` for ad‑hoc runs.
+Set the target in host inventory (`target = "compute"`, `target = "computeplusstorage"`, or `target = "storage"`), then run `partition` and `install`.
 
 ## Host inventory (recommended)
 
