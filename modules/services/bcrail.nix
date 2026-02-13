@@ -11,7 +11,7 @@
     configDir = "/etc/bcrail";
 
     network.bridge = "incusbr0";
-    storage.pool = "zfs-ssd;
+    storage.pool = "zfs-ssd";
 
     remoteUser = "vancouver";
     stateDevice = "/dev/sdb"; # or e.g. "/dev/vdb"
