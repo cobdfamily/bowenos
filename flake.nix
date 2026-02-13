@@ -14,8 +14,30 @@
   outputs = inputs@{ self, nixpkgs, disko, impermanence, installer, ... }:
     let
       defaultSystem = "x86_64-linux";
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+      ];
+      forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f system);
     in {
-      packages.${defaultSystem}.iso = installer.packages.${defaultSystem}.iso;
+      packages = (forAllSystems (system: {
+        default = installer.packages.${system}.bowenos-tools;
+        bowenos-tools = installer.packages.${system}.bowenos-tools;
+      })) // {
+        ${defaultSystem}.iso = installer.packages.${defaultSystem}.iso;
+      };
+
+      apps = forAllSystems (system: {
+        default = {
+          type = "app";
+          program = "${installer.packages.${system}.bowenos-tools}/bin/bowenos";
+        };
+        bowenos = {
+          type = "app";
+          program = "${installer.packages.${system}.bowenos-tools}/bin/bowenos";
+        };
+      });
+
       nixosConfigurations = {
         compute = nixpkgs.lib.nixosSystem {
           system = defaultSystem;
