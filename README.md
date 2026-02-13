@@ -31,27 +31,27 @@ All targets include:
 
 ### Install compute
 ```bash
-TARGET=compute ./installer/bowenos disko
-TARGET=compute ./installer/bowenos install
+TARGET=compute nix run github:cobdfamily/bowenos-tools -- partition
+TARGET=compute nix run github:cobdfamily/bowenos-tools -- install
 ```
 
 ### Install computeplusstorage (default)
 ```bash
-./installer/bowenos disko
-./installer/bowenos install
+nix run github:cobdfamily/bowenos-tools -- partition
+nix run github:cobdfamily/bowenos-tools -- install
 ```
 
 ### Install storage
 ```bash
-TARGET=storage ./installer/bowenos disko
-TARGET=storage ./installer/bowenos install
+TARGET=storage nix run github:cobdfamily/bowenos-tools -- partition
+TARGET=storage nix run github:cobdfamily/bowenos-tools -- install
 ```
 
 You can set the target via host inventory or by exporting `TARGET` for ad‑hoc runs.
 
 ## Host inventory (recommended)
 
-All host-specific settings live in `flakes/inventory/hosts/<hostname>/local.nix`.
+All host-specific settings live in the `bowenos-inventory` repository under `hosts/<hostname>/local.nix`.
 These are mapped into `bowenos.*` by the inventory flake.
 
 Key fields:
@@ -67,36 +67,41 @@ Key fields:
 
 ## Install steps (from NixOS installer)
 
-1) Clone the repo somewhere safe (not under `/mnt`, because `disko` will wipe `/mnt`):
+1) Clone the repo somewhere safe (not under `/mnt`, because partitioning will wipe `/mnt`):
 ```bash
 git clone https://github.com/cobdfamily/bowenos /root/bowenos
 cd /root/bowenos
 ```
 
-2) Partition + create mirrored rpool (WIPES boot disks):
+2) Create inventory in `/tmp/bowenos`:
 ```bash
-./installer/bowenos disko
+nix run github:cobdfamily/bowenos-tools -- setup
 ```
 
-It will prompt `y/N` before wiping. Use `FORCE=1 ./installer/bowenos disko` to skip prompting.
+3) Partition + create mirrored rpool (WIPES boot disks):
+```bash
+nix run github:cobdfamily/bowenos-tools -- partition
+```
 
-3) Clone the repo into `/mnt/etc/nixos`:
+It will prompt `y/N` before wiping. Use `FORCE=1 nix run github:cobdfamily/bowenos-tools -- partition` to skip prompting.
+
+4) Clone the repo into `/mnt/etc/nixos`:
 ```bash
 mkdir -p /mnt/etc
 git clone https://github.com/cobdfamily/bowenos /mnt/etc/nixos
 cd /mnt/etc/nixos
 ```
 
-4) Install:
+5) Install:
 ```bash
-./installer/bowenos install
+nix run github:cobdfamily/bowenos-tools -- install
 reboot
 ```
 
 ## After boot
 ```bash
-cd /etc/nixos
-./installer/bowenos switch
+cd /etc/bowenos
+nix run github:cobdfamily/bowenos-tools -- update
 ```
 
 ## NFS (computeplusstorage/storage only)
@@ -109,12 +114,7 @@ zfs set sharenfs="rw=@192.168.1.0/24,no_subtree_check,async" tank/nfs
 Targets live in `modules/services/iscsi/targets/*.nix`.
 You create zvols manually (e.g. `tank/vmstore`) and reference them as `/dev/zvol/...`.
 
-Check backing devices exist:
-```bash
-./installer/bowenos iscsi-check
-```
-
 Apply changes:
 ```bash
-./installer/bowenos switch
+nix run github:cobdfamily/bowenos-tools -- update
 ```
