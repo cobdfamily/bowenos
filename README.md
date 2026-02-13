@@ -2,20 +2,23 @@
 
 BowenOS is a family of NixOS-based systems tuned for accessibility, reliability, and modern computing needs.
 
-This repo provides three flake targets:
+This repo provides four flake targets:
 
 - `compute`: Incus host (ZFS-backed) + LAN bridge profile
 - `computeplusstorage`: everything in `compute` **plus** NFS server enabled + iSCSI targets from per-target files
 - `storage`: NFS + iSCSI server without Incus
+- `spine`: VM profile with ext4 `/persist`, ephemeral root, and Docker tooling
 
 ## What you get
 All targets include:
-- ZFS mirrored boot pool via **Disko**
 - Ephemeral root via **impermanence**
   - persists (directories): `/etc/bowenos`, `/etc/bcrail`, `/var/lib/bcrail`, `/var/lib/incus`, `/var/lib/nixos`, `/var/log`
   - persists (files): `/etc/adjtime`, `/etc/machine-id`, `/etc/ssh/ssh_host_ecdsa_key`, `/etc/ssh/ssh_host_ecdsa_key.pub`, `/etc/ssh/ssh_host_ed25519_key`, `/etc/ssh/ssh_host_ed25519_key.pub`, `/etc/ssh/ssh_host_rsa_key`, `/etc/ssh/ssh_host_rsa_key.pub`, `/var/lib/dbus/machine-id`
 - SSH locked down to **keys only**, **root login disabled**
 - Admin user created at build time from env vars
+
+`compute`/`computeplusstorage`/`storage` additionally include:
+- ZFS mirrored boot pool via **Disko**
 - GRUB with mirrored EFI partitions (`/boot` and `/bootB`)
 
 `compute`/`computeplusstorage` additionally include:
@@ -27,9 +30,13 @@ All targets include:
 - NFS server enabled (you set `sharenfs` manually on ZFS datasets)
 - iSCSI target application from `modules/services/iscsi/targets/*.nix` (you create zvols manually)
 
+`spine` additionally includes:
+- ext4 `/persist` Disko layout (`diskMode = "single"`)
+- Docker engine and docker-compose package
+
 ## Choosing a target
 
-Set the target in host inventory (`target = "compute"`, `target = "computeplusstorage"`, or `target = "storage"`), then run:
+Set the target in host inventory (`target = "compute"`, `target = "computeplusstorage"`, `target = "storage"`, or `target = "spine"`), then run:
 
 ```bash
 nix run github:cobdfamily/bowenos-tools -- partition
@@ -43,8 +50,8 @@ For long-lived production inventory, keep the same host structure in your `bowen
 These are mapped into `bowenos.*` by the inventory flake.
 
 Key fields:
-- `target` — `compute`, `computeplusstorage`, or `storage` (validated at partition time)
-- `hostId` — 8 hex chars (required by ZFS)
+- `target` — `compute`, `computeplusstorage`, `storage`, or `spine` (validated at partition time)
+- `hostId` — 8 hex chars (required)
 - `timeZone`, `locale`
 - `adminUser`, `sshPubKey`, `allowNoKey`, `sudoNeedsPassword`, `mutableUsers`, `consolePassword`
 - `diskMode` — `mirror` or `single`

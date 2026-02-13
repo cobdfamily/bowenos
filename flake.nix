@@ -1,5 +1,5 @@
 {
-  description = "Target-based NixOS kit (compute, computeplusstorage, storage): disko + impermanence + incus + optional iscsi/nfs";
+  description = "Target-based NixOS kit (compute, computeplusstorage, storage, spine): disko + impermanence + incus + optional iscsi/nfs";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
@@ -55,6 +55,17 @@
             impermanence.nixosModules.impermanence
             ./targets/storage/disks.nix
             ./targets/storage/default.nix
+          ];
+        };
+
+        spine = nixpkgs.lib.nixosSystem {
+          system = defaultSystem;
+          specialArgs = { inherit inputs; };
+          modules = [
+            disko.nixosModules.disko
+            impermanence.nixosModules.impermanence
+            ./targets/spine/disks.nix
+            ./targets/spine/default.nix
           ];
         };
       };
