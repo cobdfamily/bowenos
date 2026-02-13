@@ -7,10 +7,11 @@
     disko.inputs.nixpkgs.follows = "nixpkgs";
     impermanence.url = "github:nix-community/impermanence";
     impermanence.inputs.nixpkgs.follows = "nixpkgs";
+    bcrail.url = "github:cobdfamily/bcrail";
     bowenos.url = "github:cobdfamily/bowenos";
   };
 
-  outputs = { self, nixpkgs, disko, impermanence, bowenos, ... }:
+  outputs = inputs@{ self, nixpkgs, disko, impermanence, bowenos, ... }:
     let
       inherit (nixpkgs) lib;
       defaultSystem = "x86_64-linux";
@@ -79,6 +80,7 @@
         in
         nixpkgs.lib.nixosSystem {
           inherit system;
+          specialArgs = { inherit inputs; };
           modules =
             [
               disko.nixosModules.disko

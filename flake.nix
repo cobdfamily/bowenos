@@ -7,10 +7,11 @@
     disko.inputs.nixpkgs.follows = "nixpkgs";
     impermanence.url = "github:nix-community/impermanence";
     impermanence.inputs.nixpkgs.follows = "nixpkgs";
+    bcrail.url = "github:cobdfamily/bcrail";
     installer.url = "path:./flakes/iso?narHash=sha256-9B6mK5802wfkZR5n8xrOKS/8/VjgH4jly0E+FuqfCU8=";
   };
 
-  outputs = { self, nixpkgs, disko, impermanence, installer, ... }:
+  outputs = inputs@{ self, nixpkgs, disko, impermanence, installer, ... }:
     let
       defaultSystem = "x86_64-linux";
     in {
@@ -18,6 +19,7 @@
       nixosConfigurations = {
         compute = nixpkgs.lib.nixosSystem {
           system = defaultSystem;
+          specialArgs = { inherit inputs; };
           modules = [
             disko.nixosModules.disko
             impermanence.nixosModules.impermanence
@@ -28,6 +30,7 @@
 
         computeplusstorage = nixpkgs.lib.nixosSystem {
           system = defaultSystem;
+          specialArgs = { inherit inputs; };
           modules = [
             disko.nixosModules.disko
             impermanence.nixosModules.impermanence
@@ -38,6 +41,7 @@
 
         storage = nixpkgs.lib.nixosSystem {
           system = defaultSystem;
+          specialArgs = { inherit inputs; };
           modules = [
             disko.nixosModules.disko
             impermanence.nixosModules.impermanence
