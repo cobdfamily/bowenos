@@ -51,7 +51,8 @@ Set the target in host inventory (`target = "compute"`, `target = "computeplusst
 
 ## Host inventory (recommended)
 
-All host-specific settings live in the `bowenos-inventory` repository under `hosts/<hostname>/local.nix`.
+`nix run github:cobdfamily/bowenos-tools -- setup` creates `/tmp/bowenos` from `bowenos-inventory-template` and writes host settings to `hosts/<hostname>/local.nix`.
+For long-lived production inventory, keep the same host structure in your `bowenos-inventory` repository.
 These are mapped into `bowenos.*` by the inventory flake.
 
 Key fields:
