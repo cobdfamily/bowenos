@@ -85,14 +85,7 @@ nix run github:cobdfamily/bowenos-tools -- partition
 
 It will prompt `y/N` before wiping. Use `FORCE=1 nix run github:cobdfamily/bowenos-tools -- partition` to skip prompting.
 
-4) Clone the repo into `/mnt/etc/nixos`:
-```bash
-mkdir -p /mnt/etc
-git clone https://github.com/cobdfamily/bowenos /mnt/etc/nixos
-cd /mnt/etc/nixos
-```
-
-5) Install:
+4) Install:
 ```bash
 nix run github:cobdfamily/bowenos-tools -- install
 reboot
