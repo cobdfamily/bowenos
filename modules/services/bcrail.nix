@@ -27,7 +27,7 @@ in {
         }
       ];
     }
-    (lib.mkIf (cfg.enable && hasBcrailInput) {
+    (if (cfg.enable && hasBcrailInput) then {
       services.bcrail = {
         enable = true;
         package = bcrail.packages.${pkgs.system}.bcrail;
@@ -45,6 +45,6 @@ in {
 
         inherit (cfg) setupOnBoot;
       };
-    })
+    } else {})
   ];
 }
