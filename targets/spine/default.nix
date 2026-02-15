@@ -2,7 +2,6 @@
 {
   imports = [
     ../../modules/hardware/vm.nix
-    ../../modules/lan-bridge.nix
     ../../modules/services/docker.nix
     ../../modules/services/docker-compose.nix
   ];
