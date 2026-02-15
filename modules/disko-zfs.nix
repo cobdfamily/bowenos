@@ -77,6 +77,10 @@ let
 in
 {
   assertions = [
+    {
+      assertion = (diskMode == "mirror") || (diskMode == "single");
+      message = "zfs layout supports diskMode=mirror or diskMode=single.";
+    }
     { assertion = boota != ""; message = "bootaById is required in host local.nix."; }
     {
       assertion = (!useMirror) || bootb != "";

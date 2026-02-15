@@ -7,7 +7,7 @@ This repo provides four flake targets:
 - `compute`: Incus host (ZFS-backed) + LAN bridge profile
 - `computeplusstorage`: everything in `compute` **plus** NFS server enabled + iSCSI targets from per-target files
 - `storage`: NFS + iSCSI server without Incus
-- `spine`: VM profile with ext4 `/nix` + ext4 `/persist` (on `/dev/sdb`), ephemeral root, and Docker tooling
+- `spine`: VM profile with ext4 `/nix` + ext4 `/persist`, ephemeral root, and Docker tooling
 
 ## What you get
 All targets include:
@@ -31,7 +31,10 @@ All targets include:
 - iSCSI target application from `modules/services/iscsi/targets/*.nix` (you create zvols manually)
 
 `spine` additionally includes:
-- ext4 `/nix` on remaining boot disk space and ext4 `/persist` on `/dev/sdb` (`diskMode = "single"`)
+- ext4 `/nix` on remaining boot disk space
+- ext4 `/persist` on:
+  - `/dev/sdb` when `diskMode = "single"`
+  - `bootbById` when `diskMode = "persistant"`
 - Docker engine and docker-compose package
 
 ## Choosing a target
@@ -54,7 +57,7 @@ Key fields:
 - `hostId` — 8 hex chars (required)
 - `timeZone`, `locale`
 - `adminUser`, `sshPubKey`, `allowNoKey`, `sudoNeedsPassword`, `mutableUsers`, `consolePassword`
-- `diskMode` — `mirror` or `single`
+- `diskMode` — `mirror`, `single`, or `persistant`
 - `bootMode` — `uefi` or `bios`
 - `isVm` — `true` to use `/dev/disk/by-path` in initrd
 - `bootaById`, `bootbById` — disk by-id basenames
@@ -72,7 +75,7 @@ nix run github:cobdfamily/bowenos-tools -- help
 nix run github:cobdfamily/bowenos-tools -- setup
 ```
 `setup` validates hostname characters, host ID format (`8` hex chars), and SSH key prefix (`ssh-...`).
-For `diskMode = "mirror"`, setup and partitioning require at least two distinct disks.
+For `diskMode = "mirror"` or `diskMode = "persistant"`, setup and partitioning require at least two distinct disks.
 
 2) Apply target disk layout with Disko (DESTRUCTIVE):
 ```bash
