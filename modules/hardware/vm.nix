@@ -39,4 +39,6 @@
       linkConfig.RequiredForOnline = "routable";
     };
   };
+
+  systemd.network.wait-online.enable = lib.mkForce false;
 }

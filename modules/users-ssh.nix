@@ -6,7 +6,6 @@ let
 in
 {
   services.openssh.enable = true;
-  systemd.services.sshd.wantedBy = [ "multi-user.target" ];
   services.openssh.settings = {
     PasswordAuthentication = false;
     KbdInteractiveAuthentication = false;
