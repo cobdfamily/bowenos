@@ -31,7 +31,7 @@
   systemd.network = {
     enable = true;
     networks."50-enp5s0" = {
-      matchConfig.Name = "*";
+      matchConfig.Name = "en*";
       networkConfig = {
         DHCP = "ipv4";
         IPv6AcceptRA = true;
