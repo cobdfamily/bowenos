@@ -7,6 +7,7 @@
     ip6tables = true; # optional
   };
 
+  networking.firewall.checkReversePath = "loose";
   networking.firewall.trustedInterfaces = [ "docker0" ];
 
   users.users.${config.bowenos.users.adminUser}.extraGroups = [ "docker" ];
