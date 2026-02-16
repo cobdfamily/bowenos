@@ -17,6 +17,7 @@
     matchConfig.Name = "eth*";
     networkConfig.DHCP = "yes";
   };
+  systemd.network.wait-online.enable = lib.mkForce false;
 
   system.stateVersion = "25.11";
 }
