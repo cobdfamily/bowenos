@@ -1,7 +1,6 @@
 { modulesPath, ... }:
 {
   imports = [
-    "${modulesPath}/virtualisation/incus-virtual-machine.nix"
     ../base.nix
     ../base-packages.nix
     ../users-ssh.nix
@@ -11,7 +10,17 @@
     ../console-serial.nix
     ../boot.nix
     ../system-emergency.nix
+    "${modulesPath}/virtualisation/lxc-instance-common.nix"
+
+    "${modulesPath}/profiles/qemu-guest.nix"
   ];
+
+  # CPU hotplug
+  services.udev.extraRules = ''
+    SUBSYSTEM=="cpu", CONST{arch}=="x86-64", TEST=="online", ATTR{online}=="0", ATTR{online}="1"
+  '';
+
+  virtualisation.incus.agent.enable = lib.mkDefault true;
 
   networking = {
     dhcpcd.enable = false;
