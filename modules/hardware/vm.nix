@@ -40,4 +40,5 @@
     };
   };
 
+  systemd.network.wait-online.enable = lib.mkForce false;
 }
