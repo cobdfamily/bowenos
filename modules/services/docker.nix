@@ -7,6 +7,8 @@
     ip6tables = true; # optional
   };
 
+  networking.firewall.trustedInterfaces = [ "docker0" ];
+
   users.users.${config.bowenos.users.adminUser}.extraGroups = [ "docker" ];
 
   environment.persistence."/persist".directories = [
