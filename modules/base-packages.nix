@@ -5,6 +5,7 @@
     jq
     nfs-utils
     rsync
+    tmux
     util-linux
     wget
     vim
