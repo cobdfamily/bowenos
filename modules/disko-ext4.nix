@@ -9,8 +9,8 @@ let
   mkPath = x: if lib.hasPrefix "/dev/" x then x else "/dev/disk/by-id/" + x;
   bootaPath = mkPath boota;
   bootbPath = mkPath bootb;
-  usePersistant = diskMode == "persistant";
-  persistPath = if usePersistant then bootbPath else "/dev/sdb";
+  usePersistent = diskMode == "persistent";
+  persistPath = if usePersistent then bootbPath else "/dev/sdb";
 
   diskModeCfg = lib.attrByPath [ "bowenos" "storage" "diskMode" ] "" config;
   diskMode = if diskModeCfg != "" then diskModeCfg else
@@ -61,16 +61,16 @@ in
   assertions = [
     { assertion = boota != ""; message = "bootaById is required in host local.nix."; }
     {
-      assertion = (diskMode == "single") || (diskMode == "persistant");
-      message = "spine ext4 layout supports diskMode=single or diskMode=persistant.";
+      assertion = (diskMode == "single") || (diskMode == "persistent");
+      message = "spine ext4 layout supports diskMode=single or diskMode=persistent.";
     }
     {
-      assertion = (!usePersistant) || bootb != "";
-      message = "bootbById is required when diskMode=persistant.";
+      assertion = (!usePersistent) || bootb != "";
+      message = "bootbById is required when diskMode=persistent.";
     }
     {
-      assertion = (!usePersistant) || (bootaPath != bootbPath);
-      message = "bootaById and bootbById must be different disks when diskMode=persistant.";
+      assertion = (!usePersistent) || (bootaPath != bootbPath);
+      message = "bootaById and bootbById must be different disks when diskMode=persistent.";
     }
     {
       assertion = (bootMode == "uefi") || (bootMode == "bios");
