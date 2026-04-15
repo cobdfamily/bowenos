@@ -8,6 +8,7 @@
 
   boot.kernelParams = [
     "console=tty0"
+    "console=ttyS1,115200n8"
     "console=ttyS0,115200n8"
   ];
 
