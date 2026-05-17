@@ -9,7 +9,7 @@ let
   mkPath = x: if lib.hasPrefix "/dev/" x then x else "/dev/disk/by-id/" + x;
   bootaPath = mkPath boota;
   bootbPath = mkPath bootb;
-  usePersistant = diskMode == "persistant";
+  usePersistant = diskMode == "persistent";
   persistPath = if usePersistant then bootbPath else "/dev/sdb";
 
   diskModeCfg = lib.attrByPath [ "bowenos" "storage" "diskMode" ] "" config;
@@ -61,16 +61,16 @@ in
   assertions = [
     { assertion = boota != ""; message = "bootaById is required in host local.nix."; }
     {
-      assertion = (diskMode == "single") || (diskMode == "persistant");
-      message = "spine ext4 layout supports diskMode=single or diskMode=persistant.";
+      assertion = (diskMode == "single") || (diskMode == "persistent");
+      message = "spine ext4 layout supports diskMode=single or diskMode=persistent.";
     }
     {
       assertion = (!usePersistant) || bootb != "";
-      message = "bootbById is required when diskMode=persistant.";
+      message = "bootbById is required when diskMode=persistent.";
     }
     {
       assertion = (!usePersistant) || (bootaPath != bootbPath);
-      message = "bootaById and bootbById must be different disks when diskMode=persistant.";
+      message = "bootaById and bootbById must be different disks when diskMode=persistent.";
     }
     {
       assertion = (bootMode == "uefi") || (bootMode == "bios");
