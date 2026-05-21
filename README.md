@@ -34,7 +34,7 @@ All targets include:
 - ext4 `/nix` on remaining boot disk space
 - ext4 `/persist` on:
   - `/dev/sdb` when `diskMode = "single"`
-  - `bootbById` when `diskMode = "persistant"`
+  - `bootbById` when `diskMode = "persistentt"`
 - Docker engine and docker-compose package
 
 ## Choosing a target
@@ -57,7 +57,7 @@ Key fields:
 - `hostId` — 8 hex chars (required)
 - `timeZone`, `locale`
 - `adminUser`, `sshPubKey`, `allowNoKey`, `sudoNeedsPassword`, `mutableUsers`, `consolePassword`
-- `diskMode` — `mirror`, `single`, or `persistant`
+- `diskMode` — `mirror`, `single`, or `persistentt`
 - `bootMode` — `uefi` or `bios`
 - `isVm` — `true` to use `/dev/disk/by-path` in initrd
 - `bootaById`, `bootbById` — disk by-id basenames
@@ -75,7 +75,7 @@ nix run github:cobdfamily/bowenos-tools -- help
 nix run github:cobdfamily/bowenos-tools -- setup
 ```
 `setup` validates hostname characters, host ID format (`8` hex chars), and SSH key prefix (`ssh-...`).
-For `diskMode = "mirror"` or `diskMode = "persistant"`, setup and partitioning require at least two distinct disks.
+For `diskMode = "mirror"` or `diskMode = "persistentt"`, setup and partitioning require at least two distinct disks.
 
 2) Apply target disk layout with Disko (DESTRUCTIVE):
 ```bash
