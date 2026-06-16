@@ -19,7 +19,7 @@
     };
 
     storage = {
-      diskMode = lib.mkOption { type = lib.types.enum [ "mirror" "single" "persistant" ]; default = "mirror"; };
+      diskMode = lib.mkOption { type = lib.types.enum [ "mirror" "single" "persistent" ]; default = "mirror"; };
       isVm = lib.mkOption { type = lib.types.bool; default = false; };
       bootaById = lib.mkOption { type = lib.types.str; default = ""; };
       bootbById = lib.mkOption { type = lib.types.str; default = ""; };
